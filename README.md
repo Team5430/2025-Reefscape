@@ -10,10 +10,8 @@ Welcome to the 2025 Reefscape project! This project aims to create a stunning an
 
 ## Features
 
-- Realistic marine life simulation
-- Dynamic coral growth
-- Environmental effects (e.g., water currents, lighting)
-- Interactive user interface
+- Swerve!!!
+    - Which is mainly geared for a pure CTRE ecosystem, but without the gyroscope, the math is the same across all other motor controllers, it is just the setting of the motors that is different
 
 ## Installation
 
