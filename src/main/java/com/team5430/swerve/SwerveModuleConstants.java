@@ -13,9 +13,51 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import lombok.Builder;
 
 // CONFIGURATIONS FOR SWERVE MODULES OVERALL
-public class SwerveModuleConstants {
+public  class SwerveModuleConstants {
+    
+    @Builder
+    public record ModuleConstants (
+             Translation2d location,
+             int STEERING_MOTORID,
+             int THROTTLE_MOTORID,
+             int CANCODER_ID,
+            double CANCODER_OFFSET
+      ) {}
+
+
+    public ModuleConstants[] MODULES = new ModuleConstants[] {
+        ModuleConstants.builder()
+            .location(new Translation2d())
+            .STEERING_MOTORID(0)
+            .THROTTLE_MOTORID(1)
+            .CANCODER_ID(0)
+            .CANCODER_OFFSET(0.22192)
+            .build(),
+        ModuleConstants.builder()
+            .location(new Translation2d(0, 0))
+            .STEERING_MOTORID(2)
+            .THROTTLE_MOTORID(3)
+            .CANCODER_ID(1)
+            .CANCODER_OFFSET(-0.2307)
+            .build(),
+        ModuleConstants.builder()
+            .location(new Translation2d(0.267, -0.267))
+            .STEERING_MOTORID(4)
+            .THROTTLE_MOTORID(5)
+            .CANCODER_ID(2)
+            .CANCODER_OFFSET(0.114)
+            .build(),
+        ModuleConstants.builder()
+            .location(new Translation2d(-0.267, 0.267))
+            .STEERING_MOTORID(6)
+            .THROTTLE_MOTORID(7)
+            .CANCODER_ID(3)
+            .CANCODER_OFFSET(0.4921)
+            .build()
+    };
 
   // Maximum velocity in meters per second
   public final double MAX_VELOCITY_MPS = 5;
@@ -54,38 +96,30 @@ public class SwerveModuleConstants {
   public final ModuleConfig MODULE_CONFIG = new ModuleConfig(WHEEL_RADIUS, MAX_VELOCITY_MPS, .0309, DCMotor.getKrakenX60(1), 30, 4);
 
   // Module-specific offsets for steering (in radians)
-  // All arrays follow the order of A = 0, B = 1, C = 2, D = 3
-  public final double[] STEERING_MODULE_OFFSET = {0.22192, -0.2307, 0.114, 0.4921};
-
-  // CAN IDs for steering motors
-  public final int[] STEERING_MODULE_MOTORID = {0, 2, 4, 6};
-
-  // CAN IDs for throttle motors
-  public final int[] THROTTLE_MODULE_MOTORID = {1, 3, 5, 7};
-
-  // CAN IDs for encoders
-  public final int[] CANCODER_ID = {0, 1, 2, 3};
+ 
 
   // Module locations for kinematics calculations
   protected final Translation2d[] MODULE_LOCATIONS = {
-          new Translation2d(0.267, 0.267),  // A
-          new Translation2d(-0.267, -0.267), // B
-          new Translation2d(0.267, -0.267),  // C
-          new Translation2d(-0.267, 0.267)   // D
-  };
-
-
-  // Swerve drive kinematics
-  public final SwerveDriveKinematics KINEMATICS =
-          new SwerveDriveKinematics(MODULE_LOCATIONS);
-
-//path planner
-  // Holonomic drive controller for autonomous following
-  public final PPHolonomicDriveController AUTO_FOLLOWER_CONFIG = 
-          new PPHolonomicDriveController(
-                new PIDConstants(STEER_KP),
-                new PIDConstants(STEER_KP)); 
-
-  // Robot configuration
-  public final RobotConfig ROBOT_CONFIG = new RobotConfig(ROBOT_MASS, ROBOT_MOI, MODULE_CONFIG, MODULE_LOCATIONS);
+          new Translation2d(),  // A
+      new Translation2d( 0 , 0), // B
+                        new Translation2d(0.267, -0.267),  // C
+                        new Translation2d(-0.267, 0.267)   // D
+                  };
+        
+        
+        // Swerve drive kinematics
+        public final SwerveDriveKinematics KINEMATICS =
+            new SwerveDriveKinematics(MODULE_LOCATIONS);
+        
+        //path planner
+        // Holonomic drive controller for autonomous following
+        public final PPHolonomicDriveController AUTO_FOLLOWER_CONFIG = 
+            new PPHolonomicDriveController(
+                    new PIDConstants(STEER_KP),
+                    new PIDConstants(STEER_KP)); 
+        
+        // Robot configuration
+        public final RobotConfig ROBOT_CONFIG = new RobotConfig(ROBOT_MASS, ROBOT_MOI, MODULE_CONFIG, MODULE_LOCATIONS);
+        
+        
 }

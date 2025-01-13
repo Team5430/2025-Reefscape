@@ -37,11 +37,14 @@ public class SwerveModuleIO implements ModuleIO {
   protected TalonFX throttleMotor;
   protected CANcoder CANCoder;
 
+  protected TalonFXConfiguration steeringConfig;
+
   protected int ModuleNumber;
+
 
   protected SwerveModulePosition internalPosition = new SwerveModulePosition();
   protected SwerveModuleState internalState = new SwerveModuleState();
-  protected SwerveModuleConstants constants = new SwerveModuleConstants();
+  protected SwerveModuleConstants constants;
 
   private final StatusSignal<Angle> throttlePosition;
   private final StatusSignal<AngularVelocity> throttleVelocity;
@@ -69,9 +72,9 @@ public class SwerveModuleIO implements ModuleIO {
     this.ModuleNumber = moduleNumber;
 
     // Initialize motors and encoder with their respective CAN IDs from the configuration
-    this.steeringMotor = new TalonFX(config.STEERING_MODULE_MOTORID[moduleNumber]);
-    this.throttleMotor = new TalonFX(config.THROTTLE_MODULE_MOTORID[moduleNumber]);
-    this.CANCoder = new CANcoder(config.CANCODER_ID[moduleNumber]);
+    this.steeringMotor = new TalonFX(config.MODULES[ModuleNumber].STEERING_MOTORID());
+    this.throttleMotor = new TalonFX(config.MODULES[ModuleNumber].THROTTLE_MOTORID());
+    this.CANCoder = new CANcoder(config.MODULES[ModuleNumber].CANCODER_ID());
 
     //configure the motors 
     motorConfig();
@@ -101,7 +104,11 @@ public class SwerveModuleIO implements ModuleIO {
     this.angularVelocity = null;
   }
 
-  
+  public TalonFXConfiguration ApplySteeringConfiguration(TalonFXConfiguration wanteddConfig){
+
+    return steeringConfig;
+  }
+
   private void motorConfig(){
         // create config objects
     TalonFXConfiguration angleConfig = new TalonFXConfiguration();
@@ -127,7 +134,7 @@ public class SwerveModuleIO implements ModuleIO {
     driveConfig.Voltage.PeakForwardVoltage = 10;
     driveConfig.Voltage.PeakReverseVoltage = -10;
     encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    encoderConfig.MagnetSensor.MagnetOffset = constants.STEERING_MODULE_OFFSET[ModuleNumber];
+    encoderConfig.MagnetSensor.MagnetOffset = constants.MODULES[ModuleNumber].CANCODER_OFFSET();
     angleConfig.Feedback.FeedbackRemoteSensorID = CANCoder.getDeviceID();
     angleConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     
@@ -146,7 +153,7 @@ public class SwerveModuleIO implements ModuleIO {
     throttleMotor.getConfigurator().apply(driveConfig);
     CANCoder.getConfigurator().apply(encoderConfig);
     // zero encoders
-    steeringMotor.setPosition(constants.STEERING_MODULE_OFFSET[ModuleNumber]);
+    steeringMotor.setPosition(constants.MODULES[ModuleNumber].CANCODER_OFFSET());
   }
   
   /**
