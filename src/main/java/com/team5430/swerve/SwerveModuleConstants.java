@@ -24,38 +24,47 @@ public  class SwerveModuleConstants {
              int STEERING_MOTORID,
              int THROTTLE_MOTORID,
              int CANCODER_ID,
-            double CANCODER_OFFSET
+             double CANCODER_OFFSET,
+             boolean INVERTED
       ) {}
 
 
     public ModuleConstants[] MODULES = new ModuleConstants[] {
+    //A
         ModuleConstants.builder()
-            .location(new Translation2d())
+            .location(new Translation2d(0.267,-0.267))
             .STEERING_MOTORID(0)
             .THROTTLE_MOTORID(1)
             .CANCODER_ID(0)
             .CANCODER_OFFSET(0.22192)
+            .INVERTED(false)
             .build(),
+    //B
         ModuleConstants.builder()
-            .location(new Translation2d(0, 0))
+            .location(new Translation2d(-0.267, 0.267))
             .STEERING_MOTORID(2)
             .THROTTLE_MOTORID(3)
             .CANCODER_ID(1)
             .CANCODER_OFFSET(-0.2307)
+            .INVERTED(false)
             .build(),
+    //C
         ModuleConstants.builder()
-            .location(new Translation2d(0.267, -0.267))
+            .location(new Translation2d(-0.267, -0.267))
             .STEERING_MOTORID(4)
             .THROTTLE_MOTORID(5)
             .CANCODER_ID(2)
             .CANCODER_OFFSET(0.114)
+            .INVERTED(false)
             .build(),
+    //D
         ModuleConstants.builder()
-            .location(new Translation2d(-0.267, 0.267))
+            .location(new Translation2d(0.267, 0.267))
             .STEERING_MOTORID(6)
             .THROTTLE_MOTORID(7)
             .CANCODER_ID(3)
             .CANCODER_OFFSET(0.4921)
+            .INVERTED(false)
             .build()
     };
 
@@ -92,31 +101,32 @@ public  class SwerveModuleConstants {
   public final Mass ROBOT_MASS = Mass.ofBaseUnits(70, Pound);
   public final MomentOfInertia ROBOT_MOI = MomentOfInertia.ofBaseUnits(1, KilogramSquareMeters);
 
-  // Module configuration
-  public final ModuleConfig MODULE_CONFIG = new ModuleConfig(WHEEL_RADIUS, MAX_VELOCITY_MPS, .0309, DCMotor.getKrakenX60(1), 30, 4);
 
-  // Module-specific offsets for steering (in radians)
- 
 
   // Module locations for kinematics calculations
   protected final Translation2d[] MODULE_LOCATIONS = {
-          new Translation2d(),  // A
-      new Translation2d( 0 , 0), // B
-                        new Translation2d(0.267, -0.267),  // C
-                        new Translation2d(-0.267, 0.267)   // D
-                  };
+          MODULES[0].location(),  // A
+          MODULES[1].location(), // B
+          MODULES[2].location(),  // C
+          MODULES[3].location()   // D
+    };
         
         
         // Swerve drive kinematics
         public final SwerveDriveKinematics KINEMATICS =
             new SwerveDriveKinematics(MODULE_LOCATIONS);
         
-        //path planner
+    //path planner
         // Holonomic drive controller for autonomous following
         public final PPHolonomicDriveController AUTO_FOLLOWER_CONFIG = 
             new PPHolonomicDriveController(
                     new PIDConstants(STEER_KP),
                     new PIDConstants(STEER_KP)); 
+
+          // Module configuration
+  public final ModuleConfig MODULE_CONFIG = new ModuleConfig(WHEEL_RADIUS, MAX_VELOCITY_MPS, .0309, DCMotor.getKrakenX60(1), 30, 4);
+
+
         
         // Robot configuration
         public final RobotConfig ROBOT_CONFIG = new RobotConfig(ROBOT_MASS, ROBOT_MOI, MODULE_CONFIG, MODULE_LOCATIONS);

@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.team5430.util.TernaryVoid;
 
@@ -104,18 +105,15 @@ public class SwerveModuleIO implements ModuleIO {
     this.angularVelocity = null;
   }
 
-  public TalonFXConfiguration ApplySteeringConfiguration(TalonFXConfiguration wanteddConfig){
-
-    return steeringConfig;
-  }
-
   private void motorConfig(){
         // create config objects
     TalonFXConfiguration angleConfig = new TalonFXConfiguration();
     TalonFXConfiguration driveConfig = new TalonFXConfiguration();
     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+    
     // gear ratio
     angleConfig.Feedback.SensorToMechanismRatio = 1;
+
     // gains
     var angleSlot0 = angleConfig.Slot0;
       angleSlot0.kS = constants.STEER_KS;
@@ -126,6 +124,12 @@ public class SwerveModuleIO implements ModuleIO {
       angleSlot0.kD = constants.STEER_KD;
 
     driveConfig.Slot0.kP = constants.THROTTLE_KP;
+    
+    //invert motors
+    driveConfig.MotorOutput.Inverted = 
+    constants.MODULES[ModuleNumber].INVERTED() 
+    ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
+
     // max amperage
     driveConfig.CurrentLimits.SupplyCurrentLimit = 30;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -147,11 +151,11 @@ public class SwerveModuleIO implements ModuleIO {
       angleMotionMagic.MotionMagicExpo_kA = (.1);
     angleConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
-    
     // apply configurations
     steeringMotor.getConfigurator().apply(angleConfig);
     throttleMotor.getConfigurator().apply(driveConfig);
     CANCoder.getConfigurator().apply(encoderConfig);
+
     // zero encoders
     steeringMotor.setPosition(constants.MODULES[ModuleNumber].CANCODER_OFFSET());
   }

@@ -31,6 +31,8 @@ public class hangSub extends ControlSystem {
 
   }
 
+  //private HangState currentState = HangState.IDLE;
+  
   private static ConstantsParser.LocalConstants constants;
 
   // Singleton instance
@@ -43,12 +45,9 @@ public class hangSub extends ControlSystem {
   public hangSub() {
 
     // Parse constants
-
-
       try {
         constants = new ConstantsParser("constants/hangproperties.json").createLocalConstants();
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
       
@@ -63,12 +62,13 @@ public class hangSub extends ControlSystem {
 
 //set output to the hang
   private Command setOutput(HangState state) {
+     var currentStateName = state.name();
     return Commands.runOnce(
         () -> {
           L.set(ControlMode.PercentOutput, state.output);
           R.set(ControlMode.PercentOutput, state.output);
         },
-        this);
+        this).withName(currentStateName);
   }
 
   // Set the state of the hang
@@ -76,6 +76,13 @@ public class hangSub extends ControlSystem {
 
   public Command Idle() { return setOutput(HangState.IDLE);}
 
+
+  //check state
+  /*
+  public final Trigger isDown = new Trigger(() -> currentState == HangState.DOWN);
+
+  public final Trigger isIdle = new Trigger(() -> currentState == HangState.IDLE);
+  */
 
   @Override
   //pretty much just unwind the string
@@ -89,8 +96,6 @@ public class hangSub extends ControlSystem {
       DriverStation.reportError("HangSub Test Failed:" + e.getMessage(), true);
       return false;
     }
-        
-  
   }
 
   // Stop motors

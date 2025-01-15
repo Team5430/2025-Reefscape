@@ -10,6 +10,8 @@ public  class Constants {
   public static class CANConstants {
     public static int LeftHangMotor = 10;
     public static int RightHangMotor = 11;
+
+    
   } 
 
   public static class VisionConstants {
