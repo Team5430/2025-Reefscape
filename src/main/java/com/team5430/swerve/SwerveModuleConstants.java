@@ -28,11 +28,11 @@ public  class SwerveModuleConstants {
              boolean INVERTED
       ) {}
 
-
+// Array containing all of the modules
     public ModuleConstants[] MODULES = new ModuleConstants[] {
     //A
         ModuleConstants.builder()
-            .location(new Translation2d(0.267,-0.267))
+            .location(new Translation2d(-0.267,-0.267))
             .STEERING_MOTORID(0)
             .THROTTLE_MOTORID(1)
             .CANCODER_ID(0)
@@ -50,7 +50,7 @@ public  class SwerveModuleConstants {
             .build(),
     //C
         ModuleConstants.builder()
-            .location(new Translation2d(-0.267, -0.267))
+            .location(new Translation2d(0.267, -0.267))
             .STEERING_MOTORID(4)
             .THROTTLE_MOTORID(5)
             .CANCODER_ID(2)
@@ -110,8 +110,7 @@ public  class SwerveModuleConstants {
           MODULES[2].location(),  // C
           MODULES[3].location()   // D
     };
-        
-        
+
         // Swerve drive kinematics
         public final SwerveDriveKinematics KINEMATICS =
             new SwerveDriveKinematics(MODULE_LOCATIONS);
@@ -125,8 +124,6 @@ public  class SwerveModuleConstants {
 
           // Module configuration
   public final ModuleConfig MODULE_CONFIG = new ModuleConfig(WHEEL_RADIUS, MAX_VELOCITY_MPS, .0309, DCMotor.getKrakenX60(1), 30, 4);
-
-
         
         // Robot configuration
         public final RobotConfig ROBOT_CONFIG = new RobotConfig(ROBOT_MASS, ROBOT_MOI, MODULE_CONFIG, MODULE_LOCATIONS);

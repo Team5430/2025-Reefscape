@@ -68,6 +68,7 @@ public class RobotContainer {
         //Pathplanner example to register commands for gui usage
         //NamedCommands.registerCommand("NAME TO REGISTER", new PrintCommand("action"));
     
+        
         //setup autochooser
         autoChooser = AutoBuilder.buildAutoChooser();
             SmartDashboard.putData("Auto Chooser", autoChooser);
