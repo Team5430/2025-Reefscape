@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Vision;
-import frc.robot.subsystems.hangSub;
 import frc.robot.subsystems.Drive;
 
 public class RobotContainer {
@@ -36,7 +35,6 @@ public class RobotContainer {
       @Logged
       protected Drive mDrive;
       protected Vision m_Vision;
-      protected hangSub m_HangSub;
 
       protected ControlSystemManager controlSystemManager;
 
@@ -52,9 +50,8 @@ public class RobotContainer {
         //init subsystems
         mDrive = Drive.getInstance();
         m_Vision = Vision.getInstance();
-        m_HangSub = hangSub.getInstance();
 
-        controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive, m_HangSub);
+        controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
 
         //init feedback
         mControllerManager = ControllerManager.getInstance();
@@ -105,12 +102,6 @@ public class RobotContainer {
               mControllerManager::getY,
               mControllerManager::getRightX,
               mDrive));
-
-                // bring hang down
-              mControllerManager
-              .LeftBumper()
-              .onTrue(m_HangSub.Down())
-              .onFalse(m_HangSub.Idle());
 
                             // Auto aim and direct towards april tag in sight
               //TODO: test -> NOTE: overrides normal drive control !!!)

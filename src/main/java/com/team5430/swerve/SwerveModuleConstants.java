@@ -30,41 +30,41 @@ public  class SwerveModuleConstants {
 
 // Array containing all of the modules
     public ModuleConstants[] MODULES = new ModuleConstants[] {
-    //A
+    //A - FR
         ModuleConstants.builder()
-            .location(new Translation2d(-0.267,-0.267))
+            .location(new Translation2d(0.267,0.267))
             .STEERING_MOTORID(0)
             .THROTTLE_MOTORID(1)
             .CANCODER_ID(0)
             .CANCODER_OFFSET(0.22192)
             .INVERTED(false)
             .build(),
-    //B
+    //B - BL
         ModuleConstants.builder()
-            .location(new Translation2d(-0.267, 0.267))
+            .location(new Translation2d(-0.267, -0.267))
             .STEERING_MOTORID(2)
             .THROTTLE_MOTORID(3)
             .CANCODER_ID(1)
             .CANCODER_OFFSET(-0.2307)
-            .INVERTED(false)
+            .INVERTED(true)
             .build(),
-    //C
+    //C BR
         ModuleConstants.builder()
-            .location(new Translation2d(0.267, -0.267))
+            .location(new Translation2d(-0.267, 0.267))
             .STEERING_MOTORID(4)
             .THROTTLE_MOTORID(5)
             .CANCODER_ID(2)
             .CANCODER_OFFSET(0.114)
             .INVERTED(false)
             .build(),
-    //D
+    //D - FL
         ModuleConstants.builder()
-            .location(new Translation2d(0.267, 0.267))
+            .location(new Translation2d(0.267,-0.267))
             .STEERING_MOTORID(6)
             .THROTTLE_MOTORID(7)
             .CANCODER_ID(3)
             .CANCODER_OFFSET(0.4921)
-            .INVERTED(false)
+            .INVERTED(true)
             .build()
     };
 
