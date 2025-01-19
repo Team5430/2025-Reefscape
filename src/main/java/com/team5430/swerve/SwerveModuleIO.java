@@ -98,6 +98,8 @@ public class SwerveModuleIO implements ModuleIO {
     this.signals[3] = angularVelocity;
   }
 
+  
+
   public SwerveModuleIO() {
     this.throttlePosition = null;
     this.throttleVelocity = null;
@@ -133,6 +135,11 @@ public class SwerveModuleIO implements ModuleIO {
     // max amperage
     driveConfig.CurrentLimits.SupplyCurrentLimit = 30;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    
+    // curent limits
+    driveConfig.CurrentLimits.StatorCurrentLimit = 90;
+    driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
     driveConfig.Feedback.SensorToMechanismRatio = constants.THROTTLE_RATIO;
     // max of 10 volts allows
     driveConfig.Voltage.PeakForwardVoltage = 10;

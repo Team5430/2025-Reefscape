@@ -96,7 +96,7 @@ public interface Requests {
         }
 //apply given inputs 
         public FieldCentricRequest apply(){
-            this.speedsToApply = new ChassisSpeeds(x, y, rot);
+            this.speedsToApply = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, rot, robotAngle2d);
             return this;
         }
 //get reported robot angle
