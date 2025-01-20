@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The {@code SwerveModule} class represents a single swerve throttle module,
@@ -57,7 +58,9 @@ public class SwerveModuleIO implements ModuleIO {
   protected PositionDutyCycle position = new PositionDutyCycle(0);
   protected VoltageOut tuning = new VoltageOut(0);
 
+
   //for dev tuning
+  private boolean isTuning = false;
   public boolean isTuningSteering = true;
 
   protected BaseStatusSignal[] signals;
@@ -132,8 +135,10 @@ public class SwerveModuleIO implements ModuleIO {
     constants.MODULES[ModuleNumber].INVERTED() 
     ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
 
+    
+
     // max amperage
-    driveConfig.CurrentLimits.SupplyCurrentLimit = 30;
+    driveConfig.CurrentLimits.SupplyCurrentLimit = 30 ;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     
     // curent limits
@@ -144,11 +149,10 @@ public class SwerveModuleIO implements ModuleIO {
     // max of 10 volts allows
     driveConfig.Voltage.PeakForwardVoltage = 10;
     driveConfig.Voltage.PeakReverseVoltage = -10;
-    encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    encoderConfig.MagnetSensor.MagnetOffset = constants.MODULES[ModuleNumber].CANCODER_OFFSET();
+
     angleConfig.Feedback.FeedbackRemoteSensorID = CANCoder.getDeviceID();
     angleConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    
+
     //motion magic
     var angleMotionMagic = angleConfig.MotionMagic;
       angleMotionMagic.MotionMagicCruiseVelocity = (100 / constants.STEER_RATIO);
@@ -157,6 +161,11 @@ public class SwerveModuleIO implements ModuleIO {
       angleMotionMagic.MotionMagicExpo_kV = (.12 * constants.STEER_RATIO);
       angleMotionMagic.MotionMagicExpo_kA = (.1);
     angleConfig.ClosedLoopGeneral.ContinuousWrap = true;
+
+  //encoder sensor reading configs
+    encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    encoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = .5;
+    encoderConfig.MagnetSensor.MagnetOffset = constants.MODULES[ModuleNumber].CANCODER_OFFSET();
 
     // apply configurations
     steeringMotor.getConfigurator().apply(angleConfig);
@@ -174,10 +183,13 @@ public class SwerveModuleIO implements ModuleIO {
    */
   @Override
   public void setState(SwerveModuleState state) {
-    // Optimize the state angle to avoid rotating more than 180 degrees
-    state.optimize(getState(true).angle);
-    double wantedRotations = state.angle.getRotations();
 
+    //optimize the rotations to minimize change in angle 
+    state.optimize(getState(true).angle);
+
+    SmartDashboard.putNumber("Module Angle" + ModuleNumber, getState(true).angle.getDegrees());
+
+    double wantedRotations = state.angle.getRotations();
     // Set the steering motor to the desired angle
     steeringMotor.setControl(position.withPosition(wantedRotations));
 
@@ -233,7 +245,7 @@ public class SwerveModuleIO implements ModuleIO {
     }
 
     // Update internal state with current sensor values
-    internalState.angle = Rotation2d.fromDegrees(steeringPosition.getValueAsDouble());
+    internalState.angle = Rotation2d.fromRotations(steeringPosition.getValueAsDouble());
     internalState.speedMetersPerSecond = throttleVelocity.getValueAsDouble();
 
     return internalState;
@@ -248,11 +260,13 @@ public class SwerveModuleIO implements ModuleIO {
   @Override
   public void setVoltage(Voltage volts){
     // Set the voltage output of the motor
-    new TernaryVoid(
-      () -> isTuningSteering,
-      () -> steeringMotor.setControl(tuning.withOutput(volts)),
-      () -> throttleMotor.setControl(tuning.withOutput(volts))
-       );
+    if(isTuning){
+        new TernaryVoid(
+          () -> isTuningSteering,
+          () -> steeringMotor.setControl(tuning.withOutput(volts)),
+          () -> throttleMotor.setControl(tuning.withOutput(volts))
+          );
+    }
 
   }
 
