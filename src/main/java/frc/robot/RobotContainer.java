@@ -150,6 +150,7 @@ public class RobotContainer {
         var testTab = Shuffleboard.getTab("Tests");
         
         // Check if the widget already exists before adding it
+        //check  the test control systems for the same name or component so you don't duplicate objects on the shuffleboard - ms. t, 1-18-25
         if (testTab.getComponents().stream().noneMatch(component -> component.getTitle().equals("Test Control Systems"))) {
           {
             testTab.add("Test Control Systems", testChooser);
