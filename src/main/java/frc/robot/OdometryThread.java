@@ -10,8 +10,9 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Vision;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.subsystems.Drive.DriveControlSystem;
+import frc.robot.subsystems.Vision.VisionSub;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,9 +26,9 @@ public class OdometryThread implements Runnable {
     private static final int SLEEP_DURATION_MS = 20;
 
     //init subsystems
-    private final Drive mDrive;
+    private final DriveControlSystem mDrive;
     @SuppressWarnings("unused")
-    private final Vision mVision;
+    private final VisionSub mVision;
 
         
     private SwerveDrivePoseEstimator mPoseEstimator;
@@ -39,7 +40,7 @@ public class OdometryThread implements Runnable {
     private Future<?> future;
     private Lock lock = new ReentrantLock();
 
-    public OdometryThread(Drive drive, Vision vision) {
+    public OdometryThread(DriveControlSystem drive, VisionSub vision) {
         this.executorService = Executors.newSingleThreadExecutor();
         this.mDrive = drive;
         this.mVision = vision;
@@ -120,8 +121,9 @@ public class OdometryThread implements Runnable {
 
                 pose2dReference.set(mPoseEstimator.getEstimatedPosition());
 
-                // TODO: uncomment when simulating vision
-                // mPoseEstimator.addVisionMeasurement(mVision.getPose2d(mDrive.getRotation2d().getDegrees()), mVision.getPoseTimestamp());
+                mPoseEstimator.addVisionMeasurement(mVision.getPose2d().get(), Timer.getFPGATimestamp());
+
+                mVision.setPose2d(getPose2d());
 
                 //thread runs every 20ms
                 Thread.sleep(SLEEP_DURATION_MS);

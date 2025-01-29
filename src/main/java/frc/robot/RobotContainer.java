@@ -13,6 +13,8 @@ import com.team5430.util.booleans;
 import com.team5430.control.ControlSystemManager;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,8 +23,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommand;
-import frc.robot.subsystems.Vision;
-import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Drive.DriveControlSystem;
+import frc.robot.subsystems.Vision.SimulatedCameraIO;
+import frc.robot.subsystems.Vision.VisionSub;
 
 public class RobotContainer {
 
@@ -33,8 +36,8 @@ public class RobotContainer {
       // init subsystems
     
       @Logged
-      protected Drive mDrive;
-      protected Vision m_Vision;
+      protected DriveControlSystem mDrive;
+      protected VisionSub m_Vision;
 
       protected ControlSystemManager controlSystemManager;
 
@@ -48,8 +51,8 @@ public class RobotContainer {
     public RobotContainer() {
     //init  
         //init subsystems
-        mDrive = Drive.getInstance();
-        m_Vision = Vision.getInstance();
+        mDrive = DriveControlSystem.getInstance();
+        m_Vision = new VisionSub(new SimulatedCameraIO("SimCAMERA1", new Transform3d(0, 0, .2, new Rotation3d(0, Math.toRadians(-15), 0))));
 
         controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
 
@@ -107,7 +110,7 @@ public class RobotContainer {
               //TODO: test -> NOTE: overrides normal drive control !!!)
               mControllerManager
               .A()
-              .and(m_Vision.TagInRange())
+              .and(m_Vision.TagInRange)
               .onTrue(
                   new DriveCommand(
                       m_Vision::proportionalRange,
@@ -141,7 +144,7 @@ public class RobotContainer {
     
           
         // use for any object detection when doing camera work?
-        // new Trigger(() -> m_Drive.getPose().getX() > 10).onTrue(new PrintCommand("tracking"));
+        //new Trigger(() -> m_Drive.getPose().getX() > 10).onTrue(new PrintCommand("tracking"));
       }
     
       // configure tests for each control system

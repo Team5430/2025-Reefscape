@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Drive.DriveControlSystem;
 
 import java.util.function.DoubleSupplier;
 
@@ -11,7 +11,7 @@ import com.team5430.swerve.Requests.FieldCentricRequest;
 public class DriveCommand extends Command {
 
     // Subsystem to require
-    private final Drive mDrive;
+    private final DriveControlSystem mDrive;
 
     // Double suppliers for human inputs
     private final DoubleSupplier xTranslation, yTranslation, rTranslation;
@@ -30,7 +30,7 @@ public class DriveCommand extends Command {
             DoubleSupplier X,
             DoubleSupplier Y,
             DoubleSupplier Rotation,
-            Drive subsystem) {
+            DriveControlSystem subsystem) {
 
         // Create request
         request = new FieldCentricRequest();
