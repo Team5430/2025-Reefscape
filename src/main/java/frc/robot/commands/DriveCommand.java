@@ -58,7 +58,7 @@ public class DriveCommand extends Command {
         // Apply inputs; invert to normal cordinate system 
         request.withX(-x * 5)
                .withY(-y * 5)
-               .withRot(rotation * 5)
+               .withRot(rotation * 10)
                .withRobotAngle(mDrive.getRotation2d());
                
     
