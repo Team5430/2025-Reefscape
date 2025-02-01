@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drive.DriveControlSystem;
+import frc.robot.subsystems.Superstructure.AlgaeIntake;
 import frc.robot.subsystems.Vision.SimulatedCameraIO;
 import frc.robot.subsystems.Vision.VisionSub;
 
@@ -39,6 +40,7 @@ public class RobotContainer {
       @Logged
       protected DriveControlSystem mDrive;
       protected VisionSub m_Vision;
+      protected AlgaeIntake m_AlgaeIntake;
 
       protected ControlSystemManager controlSystemManager;
 
@@ -53,13 +55,15 @@ public class RobotContainer {
     //init  
         //init subsystems
         mDrive = DriveControlSystem.getInstance();
+        m_AlgaeIntake = AlgaeIntake.getInstance();
         m_Vision = new VisionSub(new SimulatedCameraIO("SimCAMERA1", new Transform3d(0, 0, .2, new Rotation3d(0, Math.toRadians(-15), 0))));
 
-        controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
+        controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive, m_AlgaeIntake);
 
         //init feedback
         mControllerManager = ControllerManager.getInstance();
         collisionFeedback = CollisionDetection.getInstance();
+      
 
         //init odometry thread
         odometryThread = new OdometryThread(mDrive, m_Vision);        
@@ -133,6 +137,19 @@ public class RobotContainer {
               .DetectionTrigger()
               .onTrue(new InstantCommand(mControllerManager::setRumbleOn))
               .onFalse(new InstantCommand(mControllerManager::setRumbleOff));
+
+            //algae intake 
+              mControllerManager
+              .PovUp()
+              .onTrue(m_AlgaeIntake.IDLE());
+              
+              mControllerManager
+              .PovRight()
+              .onTrue(m_AlgaeIntake.INTAKE());
+
+              mControllerManager
+              .PovDown()
+              .onTrue(m_AlgaeIntake.OUTTAKE());
 
           break;
 
