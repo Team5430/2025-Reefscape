@@ -35,6 +35,7 @@ public class PhotonCameraIO implements CameraIO {
         camera = new PhotonCamera(cameraName);
         poseEstimator = new PhotonPoseEstimator(fieldLayout,  PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, new Transform3d());
         targets = camera.getAllUnreadResults();
+        
     }
 
 

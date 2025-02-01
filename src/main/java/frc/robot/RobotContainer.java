@@ -96,6 +96,15 @@ public class RobotContainer {
               mControllerManager::getRotation,
               mDrive));
 
+              mControllerManager
+              .quickTrigger()
+              .and(m_Vision.TagInRange)
+              .whileTrue(
+                  new DriveCommand(
+                      m_Vision::proportionalRange,
+                      mControllerManager::getY,
+                      m_Vision::proportionalAim,
+                      mDrive));
           break;
       
         case REAL_ROBOT:

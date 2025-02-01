@@ -121,9 +121,9 @@ public class OdometryThread implements Runnable {
 
                 pose2dReference.set(mPoseEstimator.getEstimatedPosition());
 
-                mPoseEstimator.addVisionMeasurement(mVision.getPose2d().get(), Timer.getFPGATimestamp());
-
                 mVision.setPose2d(getPose2d());
+
+                mPoseEstimator.addVisionMeasurement(mVision.getPose2d().get(), Timer.getFPGATimestamp());
 
                 //thread runs every 20ms
                 Thread.sleep(SLEEP_DURATION_MS);
