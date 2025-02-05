@@ -5,7 +5,8 @@ import com.team5430.vision.LimelightHelpers.LimelightTarget_Fiducial;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.math.geometry.Transform3d;
+
 import java.util.function.BooleanSupplier;
 
 public class LimeLight {
@@ -13,7 +14,7 @@ public class LimeLight {
   LimelightResults results;
 
   protected String LimelightName;
-  protected Pose3d CameraToRobot;
+  protected Transform3d CameraToRobot;
 
   // 2D Targeting data
   double tx; // horizontal offset from crosshair (on dashboard) in degress
@@ -36,25 +37,26 @@ public class LimeLight {
    * @param hostname name given to limelight on setup
    * @param offsetFromCenter
    */
-  public LimeLight(String hostname, Pose3d offsetFromCenter) {
+  public LimeLight(String hostname, Transform3d offsetFromCenter) {
     LimelightName = hostname;
     CameraToRobot = offsetFromCenter;
     configureCameraPose(CameraToRobot);
     // get results
     results = LimelightHelpers.getLatestResults(hostname);
-  }
+    }
 
-  private void configureCameraPose(Pose3d pose3d) {
+    private void configureCameraPose(Transform3d transform) {
     LimelightHelpers.setCameraPose_RobotSpace(
-        LimelightName,
-        pose3d.getX(),
-        pose3d.getY(),
-        pose3d.getZ(),
-        // if doesn't work convert to degrees Units.radiansToDegrees()
-        pose3d.getRotation().getX(),
-        pose3d.getRotation().getY(),
-        pose3d.getZ());
-  }
+      LimelightName,
+      transform.getTranslation().getX(),
+      transform.getTranslation().getY(),
+      transform.getTranslation().getZ(),
+      // if doesn't work convert to degrees Units.radiansToDegrees()
+      transform.getRotation().getX(),
+      transform.getRotation().getY(),
+      transform.getRotation().getZ()
+    );
+    }
 
   /** Update variables/what is seen */
   public void updateResults() {
@@ -97,9 +99,6 @@ public class LimeLight {
 
   // check if apriltag is in sight
   BooleanSupplier AprilTagInSight = this::isAprilTagDetected;
-
-  // command based usage
-  public Trigger AprilTagDetected = new Trigger(AprilTagInSight);
 
   /**
    * Configure Limelight to only track these IDs

@@ -10,9 +10,13 @@ public  class Constants {
   public static class CANConstants {
     public static int LeftHangMotor = 10;
     public static int RightHangMotor = 11;
+
+    
   } 
 
   public static class VisionConstants {
+
+  //TODO: format and use this rather than plugin in values directly
     // position of camera relative to the robots center
     public static Pose3d CameraToRobot = new Pose3d();
     // name of camera as set in the settings

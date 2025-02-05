@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.drive;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
-public class Drive extends ControlSystem {
+public class DriveControlSystem extends ControlSystem {
 
 //TODO: make it look pretty !!!
     // Swerve Config
@@ -38,10 +38,11 @@ public class Drive extends ControlSystem {
     // Gyro
     public AHRS mGyro;
 
+    private Rotation2d gyroOffset = new Rotation2d(Math.PI/2);
     // Singleton
-    private static Drive mInstance = new Drive(); 
+    private static DriveControlSystem mInstance = new DriveControlSystem(); 
 
-    public static Drive getInstance(){
+    public static DriveControlSystem getInstance(){
         return mInstance;
     }
 
@@ -51,7 +52,7 @@ public class Drive extends ControlSystem {
     // Tuning
     private SysIdRoutine TuningRoutine;
 
-    private Drive() {
+    private DriveControlSystem() {
 //TODO: maybe a system wide robot type in @RobotContainer (???)
         // Initialize based on robot type
         switch (booleans.getRobot()) {
@@ -124,7 +125,7 @@ public class Drive extends ControlSystem {
     @Logged(name = "Heading", importance = Importance.INFO)
      public synchronized Rotation2d getRotation2d() {
             //check if gyro is connected or not null before using delta data 
-    rotation2dRef.set(mGyro != null ? mGyro.getRotation2d() : driveTrain.getRotation2d());
+    rotation2dRef.set(mGyro != null ? mGyro.getRotation2d().rotateBy(gyroOffset) : driveTrain.getRotation2d());
         return rotation2dRef.get();
 
     }

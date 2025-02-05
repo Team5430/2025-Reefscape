@@ -12,8 +12,8 @@ public class ControllerManager {
   static CustomXboxController coPilotController;
     // deadzone
     double axisThreshold = .3;
-    //  1/100th of a second  from 0 to 100%
-    double mRate = 100;
+    //  1/6th of a second  from 0 to 100%
+    double mRate = 6;
   
     SlewRateLimiter Xoptimize = new SlewRateLimiter(mRate);
     SlewRateLimiter Yoptimize = new SlewRateLimiter(mRate);

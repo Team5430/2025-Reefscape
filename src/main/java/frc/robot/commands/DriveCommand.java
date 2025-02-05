@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.drive.DriveControlSystem;
 
 import java.util.function.DoubleSupplier;
 
@@ -11,7 +11,7 @@ import com.team5430.swerve.Requests.FieldCentricRequest;
 public class DriveCommand extends Command {
 
     // Subsystem to require
-    private final Drive mDrive;
+    private final DriveControlSystem mDrive;
 
     // Double suppliers for human inputs
     private final DoubleSupplier xTranslation, yTranslation, rTranslation;
@@ -30,7 +30,7 @@ public class DriveCommand extends Command {
             DoubleSupplier X,
             DoubleSupplier Y,
             DoubleSupplier Rotation,
-            Drive subsystem) {
+            DriveControlSystem subsystem) {
 
         // Create request
         request = new FieldCentricRequest();
@@ -58,12 +58,27 @@ public class DriveCommand extends Command {
         // Apply inputs; invert to normal cordinate system 
         request.withX(-x * 5)
                .withY(-y * 5)
-               .withRot(rotation * 5);
+               .withRot(rotation * 10)
+               .withRobotAngle(mDrive.getRotation2d());
+               
     
         request.apply();
         // Drive with inputs
         mDrive.control(request);
     }
+
+    public DriveCommand withX(DoubleSupplier X) {
+        return new DriveCommand(X, yTranslation, rTranslation, mDrive);
+    }
+
+    public DriveCommand withY(DoubleSupplier Y) {
+        return new DriveCommand(xTranslation, Y, rTranslation, mDrive);
+    }
+
+    public DriveCommand withRotation(DoubleSupplier Rotation) {
+        return new DriveCommand(xTranslation, yTranslation, Rotation, mDrive);
+    }
+
 
     // Stop the drivetrain on end
     @Override

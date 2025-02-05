@@ -6,24 +6,29 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
-
+import com.pathplanner.lib.auto.NamedCommands;
 import com.team5430.control.CollisionDetection;
 import com.team5430.control.ControllerManager;
 import com.team5430.util.booleans;
 import com.team5430.control.ControlSystemManager;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommand;
-import frc.robot.subsystems.Vision;
-import frc.robot.subsystems.hangSub;
-import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.drive.DriveControlSystem;
+import frc.robot.subsystems.vision.SimulatedCameraIO;
+import frc.robot.subsystems.vision.VisionSub;
 
 public class RobotContainer {
 
@@ -34,9 +39,9 @@ public class RobotContainer {
       // init subsystems
     
       @Logged
-      protected Drive mDrive;
-      protected Vision m_Vision;
-      protected hangSub m_HangSub;
+      protected DriveControlSystem mDrive;
+      protected VisionSub m_Vision;
+      protected Superstructure m_Superstructure;
 
       protected ControlSystemManager controlSystemManager;
 
@@ -46,19 +51,22 @@ public class RobotContainer {
       protected ControllerManager mControllerManager;
       private CollisionDetection collisionFeedback;
 
+      private DriveCommand driveCommand;
+
     
     public RobotContainer() {
     //init  
         //init subsystems
-        mDrive = Drive.getInstance();
-        m_Vision = Vision.getInstance();
-        m_HangSub = hangSub.getInstance();
+        mDrive = DriveControlSystem.getInstance();
+        m_Superstructure = null;
+        m_Vision = new VisionSub(new SimulatedCameraIO("SimCAMERA1", new Transform3d(0, 0, .2, new Rotation3d(0, Math.toRadians(-15), 0))));
 
-        controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive, m_HangSub);
+        controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive, m_Superstructure);
 
         //init feedback
         mControllerManager = ControllerManager.getInstance();
         collisionFeedback = CollisionDetection.getInstance();
+      
 
         //init odometry thread
         odometryThread = new OdometryThread(mDrive, m_Vision);        
@@ -66,8 +74,9 @@ public class RobotContainer {
     
     
         //Pathplanner example to register commands for gui usage
-        //NamedCommands.registerCommand("NAME TO REGISTER", new PrintCommand("action"));
+        NamedCommands.registerCommand("Score Algae", new PrintCommand("SCORED ALGAE"));
     
+        
         //setup autochooser
         autoChooser = AutoBuilder.buildAutoChooser();
             SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -76,56 +85,56 @@ public class RobotContainer {
         testChooser = ControlSystemManager.buildTestChooser();
             SmartDashboard.putData("Test Chooser", testChooser);
 
+        //default commands
+        driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getRotation, mDrive);
+
         configureBindings();
         
         
       }
         // controller bindings here
       private void configureBindings() {
+
+        //
+      Trigger feedback = collisionFeedback.DetectionTrigger();
     
+       //setup controls depending on robot type 
       switch (booleans.getRobot()) {
 
         case SIM_ROBOT:
              // setup drive
              mDrive.setDefaultCommand(
-              new DriveCommand(
-              mControllerManager::getX,
-              mControllerManager::getY,
-              mControllerManager::getRotation,
-              mDrive));
+                    driveCommand);
 
+              mControllerManager
+              .quickTrigger()
+              .and(m_Vision.TagInRange)
+              .whileTrue(
+                  driveCommand
+                      .withX(m_Vision::proportionalRange)
+                      .withRotation(m_Vision::proportionalAim));
           break;
       
+            
         case REAL_ROBOT:
             // setup drive
             mDrive.setDefaultCommand(
-              new DriveCommand(
-              mControllerManager::getX,
-              mControllerManager::getY,
-              mControllerManager::getRightX,
-              mDrive));
-
-                // bring hang down
-              mControllerManager
-              .LeftBumper()
-              .onTrue(m_HangSub.Down())
-              .onFalse(m_HangSub.Idle());
+              driveCommand
+                .withRotation(mControllerManager::getRightX));
 
                             // Auto aim and direct towards april tag in sight
+
               //TODO: test -> NOTE: overrides normal drive control !!!)
               mControllerManager
               .A()
-              .and(m_Vision.TagInRange())
+              .and(m_Vision.TagInRange)
               .onTrue(
-                  new DriveCommand(
-                      m_Vision::proportionalRange,
-                      mControllerManager::getY,
-                      m_Vision::proportionalAim,
-                      mDrive));
+                  driveCommand
+                      .withX(m_Vision::proportionalRange)
+                      .withRotation(m_Vision::proportionalAim));
             
                // rumble driver whenever there is a hard collision
-              collisionFeedback
-              .DetectionTrigger()
+              feedback
               .onTrue(new InstantCommand(mControllerManager::setRumbleOn))
               .onFalse(new InstantCommand(mControllerManager::setRumbleOff));
 
@@ -149,7 +158,7 @@ public class RobotContainer {
     
           
         // use for any object detection when doing camera work?
-        // new Trigger(() -> m_Drive.getPose().getX() > 10).onTrue(new PrintCommand("tracking"));
+        //new Trigger(() -> m_Drive.getPose().getX() > 10).onTrue(new PrintCommand("tracking"));
       }
     
       // configure tests for each control system
@@ -157,7 +166,7 @@ public class RobotContainer {
 
         var testTab = Shuffleboard.getTab("Tests");
         
-        // Check if the widget already exists before adding it
+        // Check if the test control chooser already exists before adding it
         if (testTab.getComponents().stream().noneMatch(component -> component.getTitle().equals("Test Control Systems"))) {
           {
             testTab.add("Test Control Systems", testChooser);

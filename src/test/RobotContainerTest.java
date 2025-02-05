@@ -2,7 +2,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
-public class RobotContainerTest {
+public class RobotContainerTest implements AutoCloseable {
 
   @Test
   public void createRobotContainer() {
@@ -14,6 +14,4 @@ public class RobotContainerTest {
       fail("Failed to instantiate the RobotContainer, see stack trace above.");
     }
   }
-
-
 }
