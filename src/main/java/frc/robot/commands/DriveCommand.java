@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Drive.DriveControlSystem;
+import frc.robot.subsystems.drive.DriveControlSystem;
 
 import java.util.function.DoubleSupplier;
 
@@ -66,6 +66,19 @@ public class DriveCommand extends Command {
         // Drive with inputs
         mDrive.control(request);
     }
+
+    public DriveCommand withX(DoubleSupplier X) {
+        return new DriveCommand(X, yTranslation, rTranslation, mDrive);
+    }
+
+    public DriveCommand withY(DoubleSupplier Y) {
+        return new DriveCommand(xTranslation, Y, rTranslation, mDrive);
+    }
+
+    public DriveCommand withRotation(DoubleSupplier Rotation) {
+        return new DriveCommand(xTranslation, yTranslation, Rotation, mDrive);
+    }
+
 
     // Stop the drivetrain on end
     @Override

@@ -11,8 +11,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.subsystems.Drive.DriveControlSystem;
-import frc.robot.subsystems.Vision.VisionSub;
+import frc.robot.subsystems.drive.DriveControlSystem;
+import frc.robot.subsystems.vision.VisionSub;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

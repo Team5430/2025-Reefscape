@@ -1,31 +1,30 @@
-package frc.robot.subsystems.Superstructure;
+package frc.robot.subsystems.superstructure.Algae;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
-import com.team5430.control.ControlSystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class AlgaeIntake extends ControlSystem{
+public class AlgaeIntake {
 
 
 //singleton setup
     private static AlgaeIntake instance;
-
-    public static AlgaeIntake getInstance(){
+    
+    public static AlgaeIntake getInstance() {
         if (instance == null) {
             instance = new AlgaeIntake();
         }
+        
             return instance;
     }
 
 //declare states for finite state machine 
-    private enum state{
+    public enum state{
 
         IDLE(0,0),
         INTAKE(45, -1),
@@ -80,7 +79,7 @@ public class AlgaeIntake extends ControlSystem{
     }
 
 //coontrol the flow of states; pass them through a single function to keep track of states
-    private Command setState(state wantedState){
+    public Command setState(state wantedState){
         //save state
         savedState = wantedState;
         //tell motors to shift their setpoints to wanted state
@@ -88,23 +87,23 @@ public class AlgaeIntake extends ControlSystem{
             () -> {
                 pivot.set(ControlMode.Position, savedState.POSITION);
                 rollers.set(ControlMode.PercentOutput, savedState.OUTPUT);
-                },
-        this)
+                }
+            )
         //register command
-        .withName(savedState.toString());
+        .withName("Algae Intake" + savedState.toString());
     }
 
 
-//commands to interact with to set states
-    public Command IDLE(){
+//commands to set and use states
+    private Command IDLE(){
         return setState(state.IDLE);
     }
 
-    public Command INTAKE(){
+    private Command INTAKE(){
         return setState(state.INTAKE);
     }
 
-    public Command OUTTAKE(){
+    private Command OUTTAKE(){
         return setState(state.OUTTAKE);
     }
 
@@ -115,13 +114,15 @@ public class AlgaeIntake extends ControlSystem{
 
     public Trigger isOuttaking = new Trigger(() -> savedState == state.OUTTAKE);
 
+
+//for any sensor verification or logging
+    public void periodic(){}
+
     //return to idle state when told to stop
-    @Override
     public void Stop() {
         IDLE();
     }
 
-    @Override
     public boolean configureTest() {
     //try to execute a consecutive state change for pit testing
         try {
@@ -138,7 +139,6 @@ public class AlgaeIntake extends ControlSystem{
     }
 
     //TODO: implement logic to check motors and sensors
-    @Override
     public boolean checkStatus() {
         return true;
     }
