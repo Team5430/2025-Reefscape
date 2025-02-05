@@ -1,22 +1,14 @@
 package frc.robot.subsystems.superstructure;
 
-import frc.robot.subsystems.superstructure.Algae.AlgaeIntake;
+import frc.robot.subsystems.superstructure.Algae.AlgaeIO.Astate;
 
-
-//enum for superstructure states containing all possible states for the superstructure
 public enum SuperState {
-    
-//TODO: LIST DOWN ALL STATES AND THEIR CORRESPONDING INNER STATES
-    IDLE(AlgaeIntake.state.IDLE),
-    CORAL_STATION(AlgaeIntake.state.INTAKE);
+    IDLE(Astate.IDLE),
+    CORAL_STATION(Astate.INTAKE);
 
+    Astate algaeState;
 
-    AlgaeIntake.state algaeState;
-
-
-    private SuperState(AlgaeIntake.state algaeState){
+    private SuperState(Astate algaeState) {
         this.algaeState = algaeState;
-
     }
-
 }

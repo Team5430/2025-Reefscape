@@ -4,7 +4,7 @@ import com.team5430.control.ControlSystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.superstructure.Algae.AlgaeIntake;
+import frc.robot.subsystems.superstructure.Algae.AlgaeIO;
 
 
 public class Superstructure extends ControlSystem{
@@ -14,10 +14,10 @@ public class Superstructure extends ControlSystem{
 
 
 //declare all superstructure components
-    AlgaeIntake algae;
+    AlgaeIO algae;
 
 //constructor for all superstructure components
-    public Superstructure(AlgaeIntake algae){
+    public Superstructure(AlgaeIO algae){
         this.algae = algae;
 
 
