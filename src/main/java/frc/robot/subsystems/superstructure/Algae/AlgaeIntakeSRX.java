@@ -7,11 +7,12 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.superstructure.SuperConstants.AlgaeConstants;
 
 public class AlgaeIntakeSRX implements AlgaeIO {
 
 
-    //save state, and start off as idle
+//save state, and start off as idle
     private Astate savedState = Astate.IDLE;
 
 
@@ -21,9 +22,10 @@ public class AlgaeIntakeSRX implements AlgaeIO {
     private TalonSRX rollers;
 
 //runs on instance declaration -> settings to be set here.
+//TODO: fix can ids 
     public AlgaeIntakeSRX(){
-        pivot = new TalonSRX(0);
-        rollers = new TalonSRX(02);
+        pivot = new TalonSRX(AlgaeConstants.PIVOT_CANID);
+        rollers = new TalonSRX(AlgaeConstants.ROLLER_CANID);
         motorConfig();
 
     }
@@ -40,12 +42,14 @@ public class AlgaeIntakeSRX implements AlgaeIO {
         pivot.setInverted(false);
 
     //use slot0 on TalonSRX with set PID values
-        pivot.config_kP(0, .9);
-        pivot.config_kI(0, 0);
-        pivot.config_kD(0, 0);
+        pivot.config_kP(0, AlgaeConstants.PIVOT_KP);
+        pivot.config_kI(0, AlgaeConstants.PIVOT_KI);
+        pivot.config_kD(0, AlgaeConstants.PIVOT_KD);
 
     //Zero position on the pivot
         pivot.setSelectedSensorPosition(0);
+
+        //TODO: current limitings
 
         
     }
@@ -72,8 +76,6 @@ public class AlgaeIntakeSRX implements AlgaeIO {
     public Trigger isIntaking = new Trigger(() -> savedState == Astate.INTAKE);
 
     public Trigger isOuttaking = new Trigger(() -> savedState == Astate.OUTTAKE);
-
-
 
 
 //for any sensor verification or logging
