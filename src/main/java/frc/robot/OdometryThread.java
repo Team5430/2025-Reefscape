@@ -2,6 +2,8 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
 import com.team5430.util.booleans;
 
 import edu.wpi.first.epilogue.Logged;
@@ -11,9 +13,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.DriveControlSystem;
 import frc.robot.subsystems.vision.VisionSub;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -21,13 +25,16 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.json.simple.parser.ParseException;
+
 public class OdometryThread implements Runnable {
 
+
+//TODO: run odom loop on Notifier, use this to run and manage auto paths, for automation, which then gets used in robot Container
     private static final int SLEEP_DURATION_MS = 20;
 
     //init subsystems
     private final DriveControlSystem mDrive;
-    @SuppressWarnings("unused")
     private final VisionSub mVision;
 
         
@@ -99,6 +106,29 @@ public class OdometryThread implements Runnable {
                 booleans.shouldFlip(),
                 mDrive);
     }
+
+    //help to run pre made paths in deploy/pathplanner/paths
+    private Command runPath(String pathName){
+        try {
+            return AutoBuilder.followPath(PathPlannerPath.fromPathFile(""));
+        } catch (FileVersionException | IOException | ParseException e) {
+            DriverStation.reportError("ODOMETRY THREAD: " +e.getMessage(), true);
+        }
+            return null;
+    }
+
+    public void updateOdometry(){
+
+        mPoseEstimator.update(mDrive.getRotation2d(), mDrive.getModulePositions());
+
+        pose2dReference.set(mPoseEstimator.getEstimatedPosition());
+
+        mVision.setPose2d(getPose2d());
+
+        mPoseEstimator.addVisionMeasurement(mVision.getPose2d().get(), Timer.getFPGATimestamp());
+
+    }
+
 
     @Override
     public void run() {

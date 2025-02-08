@@ -23,11 +23,15 @@ public class Robot extends TimedRobot {
   
   // Set up logging
   Epilogue.bind(this);
+  
+
+  //custom periodics
 
   }
 
   @Override
   public void robotInit() {
+    
     FollowPathCommand.warmupCommand().schedule();
   }
 

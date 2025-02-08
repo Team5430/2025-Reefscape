@@ -21,7 +21,6 @@ public class Superstructure extends ControlSystem{
         this.algae = algae;
 
 
-
     //defaults all to idle
         setDefaultCommand(
              setState(SuperState.IDLE)
