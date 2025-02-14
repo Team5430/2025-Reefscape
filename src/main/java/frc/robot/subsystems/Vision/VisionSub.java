@@ -36,11 +36,11 @@ public class VisionSub extends SubsystemBase {
                  .findFirst();
   }
 
-  // Method to get the average value from multiple DoubleSuppliers, which come from every CameraIO
+  // Method to get the average value from multiple DoubleSuppliers, find biggest value x > 0
   private double getAverage(DoubleSupplier... suppliers) {
     return Arrays.stream(suppliers)
                  .mapToDouble(DoubleSupplier::getAsDouble)
-                 .average()
+                 .max()
                  .orElse(0.0);
   }
 
@@ -60,7 +60,7 @@ public class VisionSub extends SubsystemBase {
   // Method to get the average proportional Y value from all Cameras
   public double proportionalRange() {
     return getAverage(Arrays.stream(cameraIOs)
-                            .map(CameraIO::proportionalY)
+                            .map(CameraIO::proportionalAim)
                             .toArray(DoubleSupplier[]::new));
   }
 

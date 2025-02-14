@@ -11,8 +11,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.DriveControlSystem;
 import frc.robot.subsystems.vision.VisionSub;
@@ -24,8 +22,6 @@ import org.json.simple.parser.ParseException;
 
 public class Odometry {
 
-    //odometry loop
-    private Notifier m_odometryloop;
 
     //init subsystems
     private final DriveControlSystem mDrive;
@@ -59,12 +55,8 @@ public class Odometry {
         //init pose estimator        
         mPoseEstimator = new SwerveDrivePoseEstimator(Constants.SwerveConstants.KINEMATICS, mDrive.getRotation2d(), mDrive.getModulePositions(), new Pose2d());
 
-        //init odometry loop
-        m_odometryloop = new Notifier(this::updateOdometry);
-        m_odometryloop.setName("Odometry Thread");
         
     }
-
  
     //configure path planner
     private void configurePathPlanner() {
@@ -79,7 +71,6 @@ public class Odometry {
                 mDrive);
     }
 
-
     //update odometry
     public void updateOdometry(){
 
@@ -93,15 +84,10 @@ public class Odometry {
         mVision.setPose2d(getPose2d());
 
         //add vision measurement
-        mPoseEstimator.addVisionMeasurement(mVision.getVisionEstimate().get().getPose(), mVision.getVisionEstimate().get().getTimestamp());
+        mPoseEstimator.addVisionMeasurement(mVision.getVisionEstimate().get().getPose2d(), mVision.getVisionEstimate().get().getTimestamp());
 
     }
     
-    //start odometry
-    public void start(){
-        m_odometryloop.startPeriodic(0.02);
-    }
-
 
     //get pose2d
     @Logged(name = "Pose2d")
@@ -118,6 +104,7 @@ public class Odometry {
     
 
     //help to run pre made paths in deploy/pathplanner/paths
+    @SuppressWarnings("unused")
     private Command runPath(String pathName){
         //try to run path
         try {

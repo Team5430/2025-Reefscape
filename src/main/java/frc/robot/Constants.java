@@ -23,5 +23,9 @@ public  class Constants {
     public static String CameraName = "5430_Camera";
     // Tag ids to track; ignore others
     public static int[] ids = {1, 2, 3};
+    //vision assisted driving PID values
+    public static double kP = .7;
+    
+
   }
 }

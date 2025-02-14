@@ -1,26 +1,28 @@
-package com.team5430.vision;
+package com.team5430.util;
 
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class VisionEstimate {
-    
+
 
     private Pose2d savedPose;
     private double savedTimestamp;
 
-    public VisionEstimate(Supplier<Pose2d> poseSupplier, Supplier<Double> timestampSupplier) {
+    public VisionEstimate(Supplier<Pose2d> poseSupplier, Supplier<Double> timestampSupplier){
         this.savedPose = poseSupplier.get();
         this.savedTimestamp = timestampSupplier.get();
     }
 
-    public Pose2d getPose2d() {
+    public Pose2d getPose(){
         return savedPose;
     }
 
-    public double getTimestamp() {
+    public double getTimestamp(){
         return savedTimestamp;
     }
 
+
+    
 }

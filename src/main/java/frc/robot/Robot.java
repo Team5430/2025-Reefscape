@@ -20,13 +20,13 @@ public class Robot extends TimedRobot {
   public Robot() {
 
   m_robotContainer = new RobotContainer();
+
+  //update odometry in the background
+  addPeriodic(m_robotContainer.odometryThread::updateOdometry, .01);
   
   // Set up logging
   Epilogue.bind(this);
   
-
-  //custom periodics
-
   }
 
   @Override

@@ -85,7 +85,7 @@ public class SimulatedCameraIO implements CameraIO {
 
     //auto align
     @Override
-    public DoubleSupplier proportionalY() {
+    public DoubleSupplier proportionalAim() {
         // Return a DoubleSupplier that provides the robot's Y position scaled by a factor
         return () -> {
             var results = cam.getAllUnreadResults();

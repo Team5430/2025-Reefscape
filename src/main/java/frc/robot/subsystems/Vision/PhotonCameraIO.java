@@ -72,21 +72,20 @@ public class PhotonCameraIO implements CameraIO {
         return bestResult != null && fieldLayout.getTagPose(bestResult.getBestTarget().getFiducialId()).isPresent();
     }
 
+
+//use photonvision for pose estimation only 
     @Override
     public DoubleSupplier proportionalX() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'proportionalX'");
+        return () -> 0;
     }
 
     @Override
-    public DoubleSupplier proportionalY() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'proportionalY'");
+    public DoubleSupplier proportionalAim() {
+        return () -> 0;
     }
 
     @Override
     public void setPose2d(Pose2d pose) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setPose2d'");
+        poseEstimator.setReferencePose(pose);
     }
 }

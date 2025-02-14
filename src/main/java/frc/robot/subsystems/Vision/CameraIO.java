@@ -31,7 +31,7 @@ public interface CameraIO {
      *
      * @return a DoubleSupplier that supplies the proportional Y value.
      */
-    public DoubleSupplier proportionalY();
+    public DoubleSupplier proportionalAim();
 
     /**
      * Sets the current reference pose of the robot.

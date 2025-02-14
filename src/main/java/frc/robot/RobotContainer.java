@@ -68,7 +68,7 @@ public class RobotContainer {
         collisionFeedback = CollisionDetection.getInstance();
 
         odometryThread = new Odometry(mDrive, m_Vision);
-        odometryThread.start();
+      
       
     
     
