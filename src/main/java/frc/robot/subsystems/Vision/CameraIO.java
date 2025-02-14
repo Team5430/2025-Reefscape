@@ -3,6 +3,8 @@ package frc.robot.subsystems.vision;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
+import com.team5430.vision.VisionEstimate;
+
 import edu.wpi.first.math.geometry.Pose2d;
 
 /**
@@ -15,7 +17,7 @@ public interface CameraIO {
      *
      * @return an Optional containing the current Pose2d if available, otherwise an empty Optional.
      */
-    public Optional<Pose2d> getPose2d();
+    public Optional<VisionEstimate> getVisionEstimate();
 
     /**
      * Provides a DoubleSupplier for the proportional X value.

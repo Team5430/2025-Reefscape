@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import com.team5430.vision.VisionEstimate;
+
 // VisionSub class to manage multiple CameraIO objects
 public class VisionSub extends SubsystemBase {
 
@@ -26,9 +28,9 @@ public class VisionSub extends SubsystemBase {
   }
 
   // Method to get the Pose2d from the first available CameraIO
-  public Optional<Pose2d> getPose2d() {
+  public Optional<VisionEstimate> getVisionEstimate() {
     return Arrays.stream(cameraIOs)
-                 .map(CameraIO::getPose2d)
+                 .map(CameraIO::getVisionEstimate)
                  .filter(Optional::isPresent)
                  .map(Optional::get)
                  .findFirst();

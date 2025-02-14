@@ -8,11 +8,14 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 
+import com.team5430.vision.VisionEstimate;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.Timer;
 
 public class SimulatedCameraIO implements CameraIO {
 
@@ -67,10 +70,10 @@ public class SimulatedCameraIO implements CameraIO {
 
     // Override methods from the CameraIO interface
     @Override
-    public Optional<Pose2d> getPose2d() {
+    public Optional<VisionEstimate> getVisionEstimate() {
     // Return the robot's pose as a Pose2d object
 
-    return Optional.of(visionSim.getRobotPose().toPose2d());
+    return Optional.of(new VisionEstimate(() -> visionSim.getRobotPose().toPose2d(), () -> Timer.getFPGATimestamp()));
 
     }
 

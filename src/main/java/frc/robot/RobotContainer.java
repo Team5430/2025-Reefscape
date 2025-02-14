@@ -46,7 +46,7 @@ public class RobotContainer {
       protected ControlSystemManager controlSystemManager;
 
       @Logged
-      protected OdometryThread odometryThread;
+      protected Odometry odometryThread;
       
       protected ControllerManager mControllerManager;
       private CollisionDetection collisionFeedback;
@@ -61,16 +61,15 @@ public class RobotContainer {
         m_Superstructure = null;
         m_Vision = new VisionSub(new SimulatedCameraIO("SimCAMERA1", new Transform3d(0, 0, .2, new Rotation3d(0, Math.toRadians(-15), 0))));
 
-        controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive, m_Superstructure);
+        controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
 
         //init feedback
         mControllerManager = ControllerManager.getInstance();
         collisionFeedback = CollisionDetection.getInstance();
-      
 
-        //init odometry thread
-        odometryThread = new OdometryThread(mDrive, m_Vision);        
+        odometryThread = new Odometry(mDrive, m_Vision);
         odometryThread.start();
+      
     
     
         //Pathplanner example to register commands for gui usage
@@ -93,73 +92,75 @@ public class RobotContainer {
         
       }
         // controller bindings here
-      private void configureBindings() {
+        private void configureBindings() {
+          Trigger feedback = collisionFeedback.DetectionTrigger();
 
-        //
-      Trigger feedback = collisionFeedback.DetectionTrigger();
-    
-       //setup controls depending on robot type 
-      switch (booleans.getRobot()) {
+          // setup controls depending on robot type 
+          switch (booleans.getRobot()) {
+            case SIM_ROBOT:
+              configureSimRobotBindings();
+              break;
+            case REAL_ROBOT:
+              configureRealRobotBindings(feedback);
+              break;
+            case TUNING_ROBOT:
+              configureTuningRobotBindings();
+              break;
+          }
+        }
 
-        case SIM_ROBOT:
-             // setup drive
-             mDrive.setDefaultCommand(
-                    driveCommand);
+        private void configureSimRobotBindings() {
+          // setup drive
+          mDrive.setDefaultCommand(driveCommand);
 
-              mControllerManager
-              .quickTrigger()
-              .and(m_Vision.TagInRange)
-              .whileTrue(
-                  driveCommand
-                      .withX(m_Vision::proportionalRange)
-                      .withRotation(m_Vision::proportionalAim));
-          break;
-      
-            
-        case REAL_ROBOT:
-            // setup drive
-            mDrive.setDefaultCommand(
+          mControllerManager
+            .quickTrigger()
+            .and(m_Vision.TagInRange)
+            .whileTrue(
               driveCommand
-                .withRotation(mControllerManager::getRightX));
+                .withX(m_Vision::proportionalRange)
+                .withRotation(m_Vision::proportionalAim));
+        }
 
-                            // Auto aim and direct towards april tag in sight
+        private void configureRealRobotBindings(Trigger feedback) {
+          // setup drive
+          mDrive.setDefaultCommand(
+            driveCommand
+              .withRotation(mControllerManager::getRightX));
 
-              //TODO: test -> NOTE: overrides normal drive control !!!)
-              mControllerManager
-              .A()
-              .and(m_Vision.TagInRange)
-              .onTrue(
-                  driveCommand
-                      .withX(m_Vision::proportionalRange)
-                      .withRotation(m_Vision::proportionalAim));
-            
-               // rumble driver whenever there is a hard collision
-              feedback
-              .onTrue(new InstantCommand(mControllerManager::setRumbleOn))
-              .onFalse(new InstantCommand(mControllerManager::setRumbleOff));
+          // Auto aim and direct towards april tag in sight
+          // TODO: test -> NOTE: overrides normal drive control !!!
+          mControllerManager
+            .A()
+            .and(m_Vision.TagInRange)
+            .onTrue(
+              driveCommand
+                .withX(m_Vision::proportionalRange)
+                .withRotation(m_Vision::proportionalAim));
 
-          break;
+          // rumble driver whenever there is a hard collision
+          feedback
+            .onTrue(new InstantCommand(mControllerManager::setRumbleOn))
+            .onFalse(new InstantCommand(mControllerManager::setRumbleOff));
+        }
 
-        case TUNING_ROBOT:
-        // setup SysId bindings
-            //phoenix logger
-            mControllerManager.LeftBumper().onTrue(Commands.runOnce(SignalLogger::start));
-            mControllerManager.RightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
+        private void configureTuningRobotBindings() {
+          // setup SysId bindings
+          // phoenix logger
+          mControllerManager.LeftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+          mControllerManager.RightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
 
-            //run sysid routines in this order
-            mControllerManager.PovUp().whileTrue(mDrive.sysIdQuasistatic(Direction.kForward));
-            mControllerManager.PovDown().whileTrue(mDrive.sysIdQuasistatic(Direction.kReverse));
-            mControllerManager.Y().whileTrue(mDrive.sysIdDynamic(Direction.kForward));
-            mControllerManager.A().whileTrue(mDrive.sysIdDynamic(Direction.kReverse));
-
-          break;
-          
+          // run sysid routines in this order
+          mControllerManager.PovUp().whileTrue(mDrive.sysIdQuasistatic(Direction.kForward));
+          mControllerManager.PovDown().whileTrue(mDrive.sysIdQuasistatic(Direction.kReverse));
+          mControllerManager.Y().whileTrue(mDrive.sysIdDynamic(Direction.kForward));
+          mControllerManager.A().whileTrue(mDrive.sysIdDynamic(Direction.kReverse));
         }
     
           
         // use for any object detection when doing camera work?
         //new Trigger(() -> m_Drive.getPose().getX() > 10).onTrue(new PrintCommand("tracking"));
-      }
+      
     
       // configure tests for each control system
       public void configureTests(){

@@ -8,6 +8,9 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+
+import com.team5430.vision.VisionEstimate;
+
 import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -21,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 @SuppressWarnings("unused")
 public class PhotonCameraIO implements CameraIO {
 
-
     private PhotonCamera camera;
     private PhotonPoseEstimator poseEstimator;
     private AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
@@ -29,61 +31,39 @@ public class PhotonCameraIO implements CameraIO {
     private List<PhotonPipelineResult> targets;
     private PhotonPipelineResult bestResult = null;
 
-    
     public PhotonCameraIO(String cameraName) {
         // setup camera and pose estimator
         camera = new PhotonCamera(cameraName);
-        poseEstimator = new PhotonPoseEstimator(fieldLayout,  PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, new Transform3d());
+        poseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, new Transform3d());
         targets = camera.getAllUnreadResults();
-        
     }
 
+    public Optional<VisionEstimate> getVisionEstimate() {
+        Optional<VisionEstimate> visionEstimate = Optional.empty();
+        double highestConfidence = Double.MAX_VALUE;
 
-    @Override
-    public Optional<Pose2d> getPose2d() {
-        Optional<Pose2d> robotPose;
-        double highestConfidence = 0.0;
-
-        //filter out the best target
+        // Filter out the best target
         for (PhotonPipelineResult result : targets) {
-            // get the best target with the lowest pose ambiguity
-            // less ambiguity means more accurate pose
+            // Get the best target with the lowest pose ambiguity
             if (result.getBestTarget().getPoseAmbiguity() < highestConfidence) {
                 highestConfidence = result.getBestTarget().getPoseAmbiguity();
                 bestResult = result;
             }
         }
-        // if the best result is not null and the tag pose is present
+
+        // If the best result is not null and the tag pose is present
         if (bestResult != null && fieldLayout.getTagPose(bestResult.getBestTarget().getFiducialId()).isPresent()) {
-            // estimate the robot pose
-             robotPose = Optional.of(PhotonUtils.estimateFieldToRobotAprilTag(
+            // Estimate the robot pose
+            Pose2d estimatedPose = PhotonUtils.estimateFieldToRobotAprilTag(
                 bestResult.getBestTarget().getBestCameraToTarget(),
                 fieldLayout.getTagPose(bestResult.getBestTarget().getFiducialId()).get(),
                 new Transform3d()
-            ).toPose2d());
+            ).toPose2d();
 
-            return robotPose;
+            visionEstimate = Optional.of(new VisionEstimate(() -> estimatedPose, () -> bestResult.getTimestampSeconds()));
         }
-        // return empty if no pose is found
-        return Optional.empty(); 
-    }
 
-    @Override
-    public DoubleSupplier proportionalX() {
-        var target = bestResult.getBestTarget();
-        return () -> target.getBestCameraToTarget().getTranslation().getX() * 0.3 * 5;  
-        
-    }
-
-    @Override
-    public DoubleSupplier proportionalY() {
-        var target = bestResult.getBestTarget();
-        return () -> target.getBestCameraToTarget().getTranslation().getY() * 0.3 * 5;  
-    }
-
-    @Override
-    public void setPose2d(Pose2d pose) {
-        // TODO Auto-generated method stub
+        return visionEstimate;
     }
 
     @Override
@@ -91,5 +71,22 @@ public class PhotonCameraIO implements CameraIO {
         // check if the best result is not null and the tag pose is present
         return bestResult != null && fieldLayout.getTagPose(bestResult.getBestTarget().getFiducialId()).isPresent();
     }
-    
+
+    @Override
+    public DoubleSupplier proportionalX() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'proportionalX'");
+    }
+
+    @Override
+    public DoubleSupplier proportionalY() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'proportionalY'");
+    }
+
+    @Override
+    public void setPose2d(Pose2d pose) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setPose2d'");
+    }
 }
