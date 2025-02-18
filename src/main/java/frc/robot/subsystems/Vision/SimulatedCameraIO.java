@@ -32,7 +32,7 @@ public class SimulatedCameraIO implements CameraIO {
     SimCameraProperties cameraProp = new SimCameraProperties();
 
     // Create a PhotonCameraSim instance
-    PhotonCameraSim camera;
+    PhotonCameraSim cameraSim;
      
     double targetYaw = 0.0;
     //
@@ -49,9 +49,9 @@ public class SimulatedCameraIO implements CameraIO {
         // Setup the simulated camera properties
         setupSimulatedCamera();
         // Initialize the PhotonCameraSim with the camera and its properties
-        camera = new PhotonCameraSim(cam, cameraProp);
+        cameraSim = new PhotonCameraSim(cam, cameraProp);
         // Add the camera to the vision simulation system
-        visionSim.addCamera(camera, cameraLocation);
+        visionSim.addCamera(cameraSim, cameraLocation);
 
     }
 
@@ -116,9 +116,8 @@ public class SimulatedCameraIO implements CameraIO {
     }
 
     @Override
-    // Method to check if a tag is in range, always returns true for simulated camera
+    
     public boolean TaginRange() {
-        var result = camera.getCamera().getLatestResult();
-        return result.hasTargets();
+        return cameraSim.getCamera().getAllUnreadResults().stream().anyMatch(result -> result.hasTargets());
     }
 }

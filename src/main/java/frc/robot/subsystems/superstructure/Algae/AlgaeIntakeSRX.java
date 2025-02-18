@@ -13,7 +13,7 @@ public class AlgaeIntakeSRX implements AlgaeIO {
 
 
 //save state, and start off as idle
-    private Astate savedState = Astate.IDLE;
+    private Algaestate savedState = Algaestate.IDLE;
 
 
 //declare motors
@@ -56,7 +56,7 @@ public class AlgaeIntakeSRX implements AlgaeIO {
 
 //coontrol the flow of states; pass them through a single function to keep track of states
 @Override
-    public Command setState(Astate wantedState){
+    public Command setState(Algaestate wantedState){
         //save state
         savedState = wantedState;
         //tell motors to shift their setpoints to wanted state
@@ -71,11 +71,11 @@ public class AlgaeIntakeSRX implements AlgaeIO {
     }
 
 //triggers to check the state
-    public Trigger isIdle = new Trigger(() -> savedState == Astate.IDLE);
+    public Trigger isIdle = new Trigger(() -> savedState == Algaestate.IDLE);
 
-    public Trigger isIntaking = new Trigger(() -> savedState == Astate.INTAKE);
+    public Trigger isIntaking = new Trigger(() -> savedState == Algaestate.INTAKE);
 
-    public Trigger isOuttaking = new Trigger(() -> savedState == Astate.OUTTAKE);
+    public Trigger isOuttaking = new Trigger(() -> savedState == Algaestate.OUTTAKE);
 
 
 //for any sensor verification or logging

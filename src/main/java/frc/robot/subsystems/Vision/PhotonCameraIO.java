@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -26,10 +27,9 @@ public class PhotonCameraIO implements CameraIO {
 
     private PhotonCamera camera;
     private PhotonPoseEstimator poseEstimator;
-    private AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+    private AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     private List<PhotonPipelineResult> targets;
-    private PhotonPipelineResult bestResult = null;
 
     public PhotonCameraIO(String cameraName) {
         // setup camera and pose estimator
@@ -39,39 +39,23 @@ public class PhotonCameraIO implements CameraIO {
     }
 
     public Optional<VisionEstimate> getVisionEstimate() {
-        Optional<VisionEstimate> visionEstimate = Optional.empty();
-        double highestConfidence = Double.MAX_VALUE;
-
-        // Filter out the best target
-        for (PhotonPipelineResult result : targets) {
-            // Get the best target with the lowest pose ambiguity
-            if (result.getBestTarget().getPoseAmbiguity() < highestConfidence) {
-                highestConfidence = result.getBestTarget().getPoseAmbiguity();
-                bestResult = result;
-            }
+        Optional<EstimatedRobotPose> robotEstimate = Optional.empty();
+        
+        //update the pose estimator with all unread results
+        for (var result : camera.getAllUnreadResults()){
+            robotEstimate = poseEstimator.update(result);
         }
-
-        // If the best result is not null and the tag pose is present
-        if (bestResult != null && fieldLayout.getTagPose(bestResult.getBestTarget().getFiducialId()).isPresent()) {
-            // Estimate the robot pose
-            Pose2d estimatedPose = PhotonUtils.estimateFieldToRobotAprilTag(
-                bestResult.getBestTarget().getBestCameraToTarget(),
-                fieldLayout.getTagPose(bestResult.getBestTarget().getFiducialId()).get(),
-                new Transform3d()
-            ).toPose2d();
-
-            visionEstimate = Optional.of(new VisionEstimate(() -> estimatedPose, () -> bestResult.getTimestampSeconds()));
-        }
-
-        return visionEstimate;
+        
+        //convert the estimated pose to a VisionEstimate if present
+        return robotEstimate.map(
+            (estimate) -> new VisionEstimate(() -> estimate.estimatedPose.toPose2d(), () -> estimate.timestampSeconds));
     }
 
     @Override
     public boolean TaginRange() {
-        // check if the best result is not null and the tag pose is present
-        return bestResult != null && fieldLayout.getTagPose(bestResult.getBestTarget().getFiducialId()).isPresent();
+        // check if the any result is has a tag pose present
+        return camera.getAllUnreadResults().stream().anyMatch(result -> result.hasTargets());
     }
-
 
 //use photonvision for pose estimation only 
     @Override

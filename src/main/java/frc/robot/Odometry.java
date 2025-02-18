@@ -104,7 +104,6 @@ public class Odometry {
     
 
     //help to run pre made paths in deploy/pathplanner/paths
-    @SuppressWarnings("unused")
     private Command runPath(String pathName){
         //try to run path
         try {
@@ -116,7 +115,8 @@ public class Odometry {
         //return null if path fails
             return null;
     }
-
+ 
+        
 
 
 

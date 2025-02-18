@@ -6,7 +6,7 @@ public interface AlgaeIO {
 
     //declare algae states
     //starts with letter of corresponding system
-    enum Astate{
+    enum Algaestate{
         IDLE(0,0),
         INTAKE(45, -1),
         OUTTAKE(25, 1);
@@ -14,7 +14,7 @@ public interface AlgaeIO {
         public double POSITION;
         public double OUTPUT;
 
-        private Astate(double POSITION, double OUTPUT){
+        private Algaestate(double POSITION, double OUTPUT){
             this.POSITION = POSITION;
             this.OUTPUT = OUTPUT;
         }
@@ -22,7 +22,7 @@ public interface AlgaeIO {
     }
 
     //all implmenting classes must set the algae intake's state
-    public Command setState(Astate state);
+    public Command setState(Algaestate state);
 
     //misc for data logging or other
     public void periodic();

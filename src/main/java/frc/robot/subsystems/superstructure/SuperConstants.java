@@ -24,6 +24,16 @@ public class SuperConstants {
     }
 
     public class CoralConstants{
+        public static final int PIVOT_CANID = 0;
+        public static final int WRIST_CANID = 0;
+        public static final int INTAKE_CANID = 0;
+
+        //pivot gear ratio
+        public static final double PIVOT_GRATIO = 1;
+
+        //wrist gear ratio
+        public static final double WRIST_GRATIO = 1;
+
 
     }
 
