@@ -1,3 +1,7 @@
+/*
+Packages are like a bookshelf, imports are one piece of infromation in one book
+*/
+
 package frc.robot.subsystems.superstructure.Algae;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -21,8 +25,7 @@ public class AlgaeIntakeSRX implements AlgaeIO {
     private TalonSRX pivot;
     private TalonSRX rollers;
 
-//runs on instance declaration -> settings to be set here.
-//TODO: fix can ids 
+//making new constants that can be configured in Algea constants
     public AlgaeIntakeSRX(){
         pivot = new TalonSRX(AlgaeConstants.PIVOT_CANID);
         rollers = new TalonSRX(AlgaeConstants.ROLLER_CANID);
@@ -32,11 +35,12 @@ public class AlgaeIntakeSRX implements AlgaeIO {
 
 //configure motor settings here
     private void motorConfig(){
-    // default all settings to prevent any unexpected behaviors
+    // Factory default is resetting/putting back to orginal configurations/settings to prevent any unexpected erorr behaviors
         pivot.configFactoryDefault();
+        
     //select SRX magencoder for feedback
         pivot.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0 ,10);
-    //invert sensor readings
+    //inverts the sensor readings
         pivot.setSensorPhase(true);
     //invert motor output ^ does not affect sensor phase
         pivot.setInverted(false);
@@ -46,7 +50,7 @@ public class AlgaeIntakeSRX implements AlgaeIO {
         pivot.config_kI(0, AlgaeConstants.PIVOT_KI);
         pivot.config_kD(0, AlgaeConstants.PIVOT_KD);
 
-    //Zero position on the pivot
+    //Starting position of the pivot motor
         pivot.setSelectedSensorPosition(0);
 
         //TODO: current limitings
@@ -54,7 +58,7 @@ public class AlgaeIntakeSRX implements AlgaeIO {
         
     }
 
-//coontrol the flow of states; pass them through a single function to keep track of states
+//control the flow of states; pass them through a single function to keep track of states
 @Override
     public Command setState(Astate wantedState){
         //save state
@@ -70,7 +74,7 @@ public class AlgaeIntakeSRX implements AlgaeIO {
         .withName("Algae Intake" + savedState.toString());
     }
 
-//triggers to check the state
+//triggers to check the state so when trigger is pressed, it will say what state it is
     public Trigger isIdle = new Trigger(() -> savedState == Astate.IDLE);
 
     public Trigger isIntaking = new Trigger(() -> savedState == Astate.INTAKE);
