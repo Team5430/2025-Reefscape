@@ -5,8 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
+
 import com.team5430.control.CollisionDetection;
 import com.team5430.control.ControllerManager;
 import com.team5430.util.booleans;
@@ -21,7 +20,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommand;
@@ -33,7 +31,6 @@ import frc.robot.subsystems.vision.VisionSub;
 public class RobotContainer {
 
   //dashboard chooser
-    private final SendableChooser<Command> autoChooser;
     private final SendableChooser<Boolean> testChooser;
     
       // init subsystems
@@ -69,16 +66,6 @@ public class RobotContainer {
 
         odometryThread = new Odometry(mDrive, m_Vision);
       
-      
-    
-    
-        //Pathplanner example to register commands for gui usage
-        NamedCommands.registerCommand("Score Algae", new PrintCommand("SCORED ALGAE"));
-    
-        
-        //setup autochooser
-        autoChooser = AutoBuilder.buildAutoChooser();
-            SmartDashboard.putData("Auto Chooser", autoChooser);
 
         //setup test chooser
         testChooser = ControlSystemManager.buildTestChooser();
@@ -187,7 +174,7 @@ public class RobotContainer {
 
       // get auto command
       public Command getAutonomousCommand(){
-        return autoChooser.getSelected();
+        return Commands.none();
       }
 
   

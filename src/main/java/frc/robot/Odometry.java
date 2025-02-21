@@ -1,24 +1,14 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FileVersionException;
-import com.team5430.util.booleans;
-
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.DriveControlSystem;
 import frc.robot.subsystems.vision.VisionSub;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.json.simple.parser.ParseException;
 
 public class Odometry {
 
@@ -32,7 +22,6 @@ public class Odometry {
   
     //pose estimator
     private final SwerveDrivePoseEstimator mPoseEstimator;
-    private RobotConfig config;
 
     
 
@@ -41,13 +30,6 @@ public class Odometry {
         this.mDrive = drive;
         this.mVision = vision;
 
-        //get robot config
-        try {
-            //stored in deploy/settings.json
-            config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-           throw new RuntimeException();
-        }
         
         //configure path planner
         configurePathPlanner();
@@ -60,15 +42,7 @@ public class Odometry {
  
     //configure path planner
     private void configurePathPlanner() {
-        AutoBuilder.configure(
-                this::getPose2d,
-                this::resetPose2d,
-                mDrive::getCurrentSpeeds,
-                mDrive::autoControl,
-                Constants.SwerveConstants.AUTO_FOLLOWER_CONFIG,
-                config,
-                booleans.shouldFlip(),
-                mDrive);
+   
     }
 
     //update odometry
@@ -103,19 +77,6 @@ public class Odometry {
     }
     
 
-    //help to run pre made paths in deploy/pathplanner/paths
-    private Command runPath(String pathName){
-        //try to run path
-        try {
-            return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName));
-        //catch any problems with running path
-        } catch (FileVersionException | IOException | ParseException e) {
-            DriverStation.reportError("ODOMETRY THREAD: " + e.getMessage(), true);
-        }
-        //return null if path fails
-            return null;
-    }
- 
         
 
 

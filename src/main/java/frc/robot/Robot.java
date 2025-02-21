@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
@@ -30,10 +29,7 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void robotInit() {
-    
-    FollowPathCommand.warmupCommand().schedule();
-  }
+  public void robotInit() {}
 
   @Override
   public void robotPeriodic() {

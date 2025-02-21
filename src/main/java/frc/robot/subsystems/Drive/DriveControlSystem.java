@@ -5,12 +5,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.team5430.control.ControlSystem;
-import com.team5430.swerve.Requests;
-import com.team5430.swerve.Requests.*;
-import com.team5430.swerve.SimModuleIO;
-import com.team5430.swerve.SwerveModuleConstants;
-import com.team5430.swerve.SwerveModuleGroup;
-import com.team5430.swerve.SwerveModuleIO;
 import com.team5430.util.booleans;
 
 import edu.wpi.first.epilogue.Logged;
@@ -25,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.subsystems.drive.Requests.*;
 
 public class DriveControlSystem extends ControlSystem {
 

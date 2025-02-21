@@ -1,16 +1,10 @@
-package com.team5430.swerve;
+package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Pound;
 
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import lombok.Builder;
@@ -115,18 +109,7 @@ public  class SwerveModuleConstants {
         public final SwerveDriveKinematics KINEMATICS =
             new SwerveDriveKinematics(MODULE_LOCATIONS);
         
-    //path planner
-        // Holonomic drive controller for autonomous following
-        public final PPHolonomicDriveController AUTO_FOLLOWER_CONFIG = 
-            new PPHolonomicDriveController(
-                    new PIDConstants(STEER_KP),
-                    new PIDConstants(STEER_KP)); 
 
-          // Module configuration
-  public final ModuleConfig MODULE_CONFIG = new ModuleConfig(WHEEL_RADIUS, MAX_VELOCITY_MPS, .0309, DCMotor.getKrakenX60(1), 30, 4);
-        
-        // Robot configuration
-        public final RobotConfig ROBOT_CONFIG = new RobotConfig(ROBOT_MASS, ROBOT_MOI, MODULE_CONFIG, MODULE_LOCATIONS);
         
         
 }

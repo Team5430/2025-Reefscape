@@ -1,4 +1,4 @@
-package com.team5430.swerve;
+package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Volts;
 
@@ -40,7 +40,7 @@ public class SwerveModuleGroup {
    *
    * @param modules Allows creation of up to 4 SwerveModules, based on your given config
    * @param config Configuration for the swerve modules
-   * @see com.team5430.swerve.SwerveModuleConstants
+   * @see frc.robot.subsystems.drive.SwerveModuleConstants
    */
   public SwerveModuleGroup(SwerveModuleConstants config, ModuleIO... modules) {
     this.moduleCount = modules.length;    
@@ -82,7 +82,7 @@ public class SwerveModuleGroup {
     robotRelativeDrive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, robotAngle));
   }
 
-  /**Drive Based on given request {@link com.team5430.swerve.Requests} */
+  /**Drive Based on given request {@link frc.robot.subsystems.drive.Requests} */
   public void control(Requests request){
     SwerveModuleState[] states = constants.KINEMATICS.toSwerveModuleStates(request.Speeds());
     setStates(states);
