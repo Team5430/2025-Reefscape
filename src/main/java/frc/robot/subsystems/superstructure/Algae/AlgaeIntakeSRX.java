@@ -3,7 +3,7 @@ package frc.robot.subsystems.superstructure.Algae;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
+                              
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -54,7 +54,7 @@ public class AlgaeIntakeSRX implements AlgaeIO {
         
     }
 
-//coontrol the flow of states; pass them through a single function to keep track of states
+//control the flow of states; pass them through a single function to keep track of states
 @Override
     public Command setState(Astate wantedState){
         //save state
@@ -70,11 +70,9 @@ public class AlgaeIntakeSRX implements AlgaeIO {
         .withName("Algae Intake" + savedState.toString());
     }
 
-//triggers to check the state
+    //Triggers as to be pressed and display which states is it
     public Trigger isIdle = new Trigger(() -> savedState == Astate.IDLE);
-
     public Trigger isIntaking = new Trigger(() -> savedState == Astate.INTAKE);
-
     public Trigger isOuttaking = new Trigger(() -> savedState == Astate.OUTTAKE);
 
 
