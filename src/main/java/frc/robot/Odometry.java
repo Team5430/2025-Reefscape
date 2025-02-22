@@ -1,3 +1,5 @@
+//Package is a bookcase and import is one book of information inside the bookcase.
+
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -23,14 +25,16 @@ import org.json.simple.parser.ParseException;
 public class Odometry {
 
 
-    //init subsystems
+    /* init subsystems as variables to be used as commands for DriveControlSystem and VisionSub.
+    Final is to make it nonchangable */
     private final DriveControlSystem mDrive;
     private final VisionSub mVision;
 
-    //pose2d thread safe reference
+    /*pose2d thread safe reference, 
+    thread is there to make Odometry more efficient by doing multiple calculations.*/
     private final AtomicReference<Pose2d> pose2dReference = new AtomicReference<>(new Pose2d());
   
-    //pose estimator
+    //pose estimator, estimating where the robot will be at through predictions
     private final SwerveDrivePoseEstimator mPoseEstimator;
     private RobotConfig config;
 
@@ -58,15 +62,19 @@ public class Odometry {
         
     }
  
-    //configure path planner
+    //configure path planner by setting every data variables and boolean switches into the configure() 
     private void configurePathPlanner() {
         AutoBuilder.configure(
+            //2D object tracking data
                 this::getPose2d,
+            //data of 2D object reset and to be used
                 this::resetPose2d,
                 mDrive::getCurrentSpeeds,
                 mDrive::autoControl,
+            //gives control of autonomous to PathPlanner
                 Constants.SwerveConstants.AUTO_FOLLOWER_CONFIG,
                 config,
+            //Constants of Swerve as offset data
                 booleans.shouldFlip(),
                 mDrive);
     }
@@ -74,22 +82,22 @@ public class Odometry {
     //update odometry
     public void updateOdometry(){
 
-        //update pose estimator
+        //update pose estimator to get new data 
         mPoseEstimator.update(mDrive.getRotation2d(), mDrive.getModulePositions());
 
         //cache pose2d
         pose2dReference.set(mPoseEstimator.getEstimatedPosition());
 
-        //update vision
+        //update vision 
         mVision.setPose2d(getPose2d());
 
-        //add vision measurement
+        //add vision measurement of X and Y values of the object
         mPoseEstimator.addVisionMeasurement(mVision.getVisionEstimate().get().getPose2d(), mVision.getVisionEstimate().get().getTimestamp());
 
     }
     
 
-    //get pose2d
+    //get pose2d data
     @Logged(name = "Pose2d")
     public Pose2d getPose2d() {
 
@@ -97,7 +105,7 @@ public class Odometry {
 
     }
 
-    //reset pose2d
+    //reset pose2d data
     public void resetPose2d(Pose2d poseSupplier) {
          mPoseEstimator.resetPosition(mDrive.getRotation2d(), mDrive.getModulePositions(), poseSupplier);
     }
