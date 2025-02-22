@@ -15,11 +15,12 @@ import com.team5430.control.ControlSystemManager;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -53,9 +54,12 @@ public class RobotContainer {
 
       private DriveCommand driveCommand;
 
+      private Alert RobotStatus;
     
     public RobotContainer() {
     //init  
+      RobotStatus = new Alert("ROBOT IS STOPPED", AlertType.kError);
+      RobotStatus.set(false);
         //init subsystems
         mDrive = DriveControlSystem.getInstance();
         m_Superstructure = null;
@@ -85,7 +89,7 @@ public class RobotContainer {
             SmartDashboard.putData("Test Chooser", testChooser);
 
         //default commands
-        driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getRotation, mDrive);
+        driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getRightX, mDrive);
 
         configureBindings();
         
@@ -114,12 +118,19 @@ public class RobotContainer {
           mDrive.setDefaultCommand(driveCommand);
 
           mControllerManager
-            .quickTrigger()
+            .getRightTrigger()
             .and(m_Vision.TagInRange)
             .whileTrue(
               driveCommand
                 .withX(m_Vision::proportionalRange)
                 .withRotation(m_Vision::proportionalAim));
+              
+          mControllerManager
+            .getOverride()
+            .whileTrue(new InstantCommand(() -> Stop()))
+            .onFalse(new InstantCommand(() -> RobotStatus.set(false)));
+
+          
         }
 
         private void configureRealRobotBindings(Trigger feedback) {
@@ -131,22 +142,20 @@ public class RobotContainer {
           // Auto aim and direct towards april tag in sight
           // TODO: test -> NOTE: overrides normal drive control !!!
           mControllerManager
-            .A()
+            .getRightTrigger()
             .and(m_Vision.TagInRange)
             .onTrue(
               driveCommand
                 .withX(m_Vision::proportionalRange)
                 .withRotation(m_Vision::proportionalAim));
 
-          // rumble driver whenever there is a hard collision
-          feedback
-            .onTrue(new InstantCommand(mControllerManager::setRumbleOn))
-            .onFalse(new InstantCommand(mControllerManager::setRumbleOff));
+       
         }
 
         private void configureTuningRobotBindings() {
           // setup SysId bindings
           // phoenix logger
+      /*
           mControllerManager.LeftBumper().onTrue(Commands.runOnce(SignalLogger::start));
           mControllerManager.RightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
 
@@ -155,6 +164,7 @@ public class RobotContainer {
           mControllerManager.PovDown().whileTrue(mDrive.sysIdQuasistatic(Direction.kReverse));
           mControllerManager.Y().whileTrue(mDrive.sysIdDynamic(Direction.kForward));
           mControllerManager.A().whileTrue(mDrive.sysIdDynamic(Direction.kReverse));
+          */
         }
     
           
@@ -183,6 +193,7 @@ public class RobotContainer {
       // stops and resets all control systems
       public void Stop(){
         controlSystemManager.stopAll();
+        RobotStatus.set(true);
       }
 
       // get auto command

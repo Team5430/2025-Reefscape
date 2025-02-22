@@ -23,7 +23,7 @@ public class SimulatedCameraIO implements CameraIO {
     VisionSystemSim visionSim = new VisionSystemSim("Simulated Cameras");
 
     // Load the field layout for AprilTag detection
-    AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+    AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     // Create a PhotonCamera instance for the simulated camera
     PhotonCamera cam;
