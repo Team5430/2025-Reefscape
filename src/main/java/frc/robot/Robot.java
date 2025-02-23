@@ -22,7 +22,7 @@ public class Robot extends TimedRobot {
   m_robotContainer = new RobotContainer();
 
   //update odometry in the background
-  addPeriodic(m_robotContainer.odometryThread::updateOdometry, .01);
+  addPeriodic(m_robotContainer.odometryThread::updateOdometry, .02);
   
   // Set up logging
   Epilogue.bind(this);
