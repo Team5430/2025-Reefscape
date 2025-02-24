@@ -4,7 +4,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
-import com.team5430.util.booleans;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -32,7 +31,7 @@ public class Odometry {
   
     //pose estimator
     private final SwerveDrivePoseEstimator mPoseEstimator;
-    private RobotConfig config;
+    private final RobotConfig config;
 
     
 
@@ -41,7 +40,7 @@ public class Odometry {
         this.mDrive = drive;
         this.mVision = vision;
 
-        //get robot config
+        //get robot config for path planner
         try {
             //stored in deploy/settings.json
             config = RobotConfig.fromGUISettings();
@@ -67,7 +66,7 @@ public class Odometry {
                 mDrive::autoControl,
                 Constants.SwerveConstants.AUTO_FOLLOWER_CONFIG,
                 config,
-                booleans.shouldFlip(),
+                Constants.shouldFlip(),
                 mDrive);
     }
 

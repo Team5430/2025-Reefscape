@@ -54,6 +54,7 @@ public class AlgaeIntakeSRX implements AlgaeIO {
         pivot_L.config_kI(0, AlgaeConstants.PIVOT_KI);
         pivot_L.config_kD(0, AlgaeConstants.PIVOT_KD);
 
+    //not inverted because it is mechanically designed to be opposite
         pivot_R.setInverted(InvertType.FollowMaster);
 
     //Zero position on the pivot

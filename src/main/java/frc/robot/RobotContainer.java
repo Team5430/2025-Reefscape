@@ -9,7 +9,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.team5430.control.CollisionDetection;
 import com.team5430.control.ControllerManager;
-import com.team5430.util.booleans;
 import com.team5430.control.ControlSystemManager;
 
 import edu.wpi.first.epilogue.Logged;
@@ -25,153 +24,168 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.Algae.AlgaeIntakeSRX;
 import frc.robot.subsystems.drive.DriveControlSystem;
+import frc.robot.subsystems.vision.LimelightIO;
+import frc.robot.subsystems.vision.PhotonCameraIO;
 import frc.robot.subsystems.vision.SimulatedCameraIO;
 import frc.robot.subsystems.vision.VisionSub;
 
 public class RobotContainer {
 
-  //dashboard chooser
+  //dashboard choosers
     private final SendableChooser<Command> autoChooser;
     private final SendableChooser<Boolean> testChooser;
     
-      // init subsystems
-    
+    //Subsystems
+      protected ControlSystemManager controlSystemManager;
+
       @Logged
       protected DriveControlSystem mDrive;
       protected VisionSub m_Vision;
       protected Superstructure m_Superstructure;
-
-      protected ControlSystemManager controlSystemManager;
-
+  
+    //Odometry
       @Logged
       protected Odometry odometryThread;
-      
+    
+    //Controllers
       protected ControllerManager mControllerManager;
       private CollisionDetection collisionFeedback;
 
+    //Drive Command
       private DriveCommand driveCommand;
 
+    //Alerts
       private Alert RobotStatus;
     
     public RobotContainer() {
-    //init  
-      RobotStatus = new Alert("ROBOT IS STOPPED", AlertType.kError);
-      RobotStatus.set(false);
-        //init subsystems
-        mDrive = DriveControlSystem.getInstance();
-        m_Superstructure = null;
-        m_Vision = new VisionSub(new SimulatedCameraIO("SimCAMERA1", new Transform3d(0, 0, .2, new Rotation3d(0, Math.toRadians(-15), 0))));
+    // Initialize stopping alert
+    RobotStatus = new Alert("ROBOT IS STOPPED", AlertType.kError);
+    RobotStatus.set(false);
 
-        controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
+          // Initialize subsystems based on robot mode
+          switch (Constants.getRobot()) {
+            case SIM_ROBOT:
+                mDrive = new DriveControlSystem();
+                m_Superstructure = null;
+                m_Vision = new VisionSub(new SimulatedCameraIO("SimCAMERA1", Constants.VisionConstants.CameraToRobot));
 
-        //init feedback
-        mControllerManager = ControllerManager.getInstance();
-        collisionFeedback = CollisionDetection.getInstance();
+                configureBindings(RobotType.SIM_ROBOT);
+              break;
+            case REAL_ROBOT:
+                mDrive = new DriveControlSystem();
+                m_Superstructure = new Superstructure(new AlgaeIntakeSRX());
+                m_Vision = new VisionSub(
+                  new LimelightIO("limelight", Constants.VisionConstants.CameraToRobot),
+                  new PhotonCameraIO("photon")
+                );
 
-        odometryThread = new Odometry(mDrive, m_Vision);
-      
-      
-    
-    
-        //Pathplanner example to register commands for gui usage
-        NamedCommands.registerCommand("Score Algae", new PrintCommand("SCORED ALGAE"));
-    
-        
-        //setup autochooser
-        autoChooser = AutoBuilder.buildAutoChooser();
-            SmartDashboard.putData("Auto Chooser", autoChooser);
+                configureBindings(RobotType.REAL_ROBOT);
+              break;
+            case TUNING_ROBOT:
+                mDrive = new DriveControlSystem();
+                m_Superstructure = null;
+                m_Vision = new VisionSub();
 
-        //setup test chooser
-        testChooser = ControlSystemManager.buildTestChooser();
-            SmartDashboard.putData("Test Chooser", testChooser);
+                configureBindings(RobotType.TUNING_ROBOT);
+              break;
+          }
 
-        //default commands
-        driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getRightX, mDrive);
+    // Initialize control system manager
+    controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
 
-        configureBindings();
-        
+    // Initialize feedback
+    mControllerManager = ControllerManager.getInstance();
+    collisionFeedback = new CollisionDetection();
+
+    // Initialize odometry
+    odometryThread = new Odometry(mDrive, m_Vision);
+
+    // Pathplanner example to register commands for GUI usage
+    NamedCommands.registerCommand("Score Algae", new PrintCommand("SCORED ALGAE"));
+
+    // Setup auto chooser
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    // Setup test chooser
+    testChooser = ControlSystemManager.buildTestChooser();
+    SmartDashboard.putData("Test Chooser", testChooser);
+
+    // Default commands
+    driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getRightX, mDrive);
+
         
       }
         // controller bindings here
-        private void configureBindings() {
-          Trigger feedback = collisionFeedback.DetectionTrigger();
+        private void configureBindings(RobotType robotMode) {
+          Trigger feedback = new Trigger(collisionFeedback.getDetection);
 
           // setup controls depending on robot type 
-          switch (booleans.getRobot()) {
-            case SIM_ROBOT:
-              configureSimRobotBindings();
+          switch (robotMode) {
+      case SIM_ROBOT:
+              // setup drive
+              mDrive.setDefaultCommand(driveCommand);
+
+              mControllerManager
+          .getRightTrigger()
+          .and(m_Vision.TagInRange)
+          .whileTrue(
+            driveCommand
+              .withX(m_Vision::proportionalRange)
+              .withRotation(m_Vision::proportionalAim)
+          );
+          
+              mControllerManager
+          .getOverride()
+          .whileTrue(new InstantCommand(() -> Stop()))
+          .onFalse(new InstantCommand(() -> RobotStatus.set(false)));
               break;
-            case REAL_ROBOT:
-              configureRealRobotBindings(feedback);
+
+      case REAL_ROBOT:
+              // setup drive
+              mDrive.setDefaultCommand(
+          driveCommand
+            .withRotation(mControllerManager::getRightX)
+              );
+
+              // Auto aim and direct towards april tag in sight
+              // TODO: test -> NOTE: overrides normal drive control !!!
+              mControllerManager
+          .getRightTrigger()
+          .and(m_Vision.TagInRange)
+          .onTrue(
+            driveCommand
+              .withX(m_Vision::proportionalRange)
+              .withRotation(m_Vision::proportionalAim)
+          );
+
+              feedback
+          .onTrue(mControllerManager.setDriverRumble(true))
+          .onFalse(mControllerManager.setDriverRumble(false));
+          
               break;
-            case TUNING_ROBOT:
-              configureTuningRobotBindings();
+
+      case TUNING_ROBOT:
+              // setup SysId bindings
+              // phoenix logger
+              /*
+              mControllerManager.LeftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+              mControllerManager.RightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
+
+              // run sysid routines in this order
+              mControllerManager.PovUp().whileTrue(mDrive.sysIdQuasistatic(Direction.kForward));
+              mControllerManager.PovDown().whileTrue(mDrive.sysIdQuasistatic(Direction.kReverse));
+              mControllerManager.Y().whileTrue(mDrive.sysIdDynamic(Direction.kForward));
+              mControllerManager.A().whileTrue(mDrive.sysIdDynamic(Direction.kReverse));
+              */
               break;
           }
         }
-
-        private void configureSimRobotBindings() {
-          // setup drive
-          mDrive.setDefaultCommand(driveCommand);
-
-          mControllerManager
-            .getRightTrigger()
-            .and(m_Vision.TagInRange)
-            .whileTrue(
-              driveCommand
-                .withX(m_Vision::proportionalRange)
-                .withRotation(m_Vision::proportionalAim));
-              
-          mControllerManager
-            .getOverride()
-            .whileTrue(new InstantCommand(() -> Stop()))
-            .onFalse(new InstantCommand(() -> RobotStatus.set(false)));
-
-          
-        }
-
-        private void configureRealRobotBindings(Trigger feedback) {
-          // setup drive
-          mDrive.setDefaultCommand(
-            driveCommand
-              .withRotation(mControllerManager::getRightX));
-
-          // Auto aim and direct towards april tag in sight
-          // TODO: test -> NOTE: overrides normal drive control !!!
-          mControllerManager
-            .getRightTrigger()
-            .and(m_Vision.TagInRange)
-            .onTrue(
-              driveCommand
-                .withX(m_Vision::proportionalRange)
-                .withRotation(m_Vision::proportionalAim));
-
-       
-        }
-
-        private void configureTuningRobotBindings() {
-          // setup SysId bindings
-          // phoenix logger
-      /*
-          mControllerManager.LeftBumper().onTrue(Commands.runOnce(SignalLogger::start));
-          mControllerManager.RightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
-
-          // run sysid routines in this order
-          mControllerManager.PovUp().whileTrue(mDrive.sysIdQuasistatic(Direction.kForward));
-          mControllerManager.PovDown().whileTrue(mDrive.sysIdQuasistatic(Direction.kReverse));
-          mControllerManager.Y().whileTrue(mDrive.sysIdDynamic(Direction.kForward));
-          mControllerManager.A().whileTrue(mDrive.sysIdDynamic(Direction.kReverse));
-          */
-        }
-    
-          
-        // use for any object detection when doing camera work?
-        //new Trigger(() -> m_Drive.getPose().getX() > 10).onTrue(new PrintCommand("tracking"));
-      
-    
       // configure tests for each control system
       public void configureTests(){
 

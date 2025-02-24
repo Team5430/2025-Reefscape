@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
  *
- * A standard for subsystems to implement if they are some sort of  physical mechanism,
+ * A standard for subsystems to implement if they are a physical mechanism,
  * as to be able to quickly manipulate them in different situations.
  *  
  */

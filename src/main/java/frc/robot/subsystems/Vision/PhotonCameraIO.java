@@ -69,7 +69,5 @@ public class PhotonCameraIO implements CameraIO {
     }
 
     @Override
-    public void setPose2d(Pose2d pose) {
-        poseEstimator.setReferencePose(pose);
-    }
+    public void setPose2d(Pose2d pose) {}
 }

@@ -3,12 +3,10 @@ package com.team5430.control;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.BooleanSupplier;
 
 public class CollisionDetection {
   // TODO Test in real life to see performance
-  private static CollisionDetection instance;
   
     static BuiltInAccelerometer accelerometer;
     // threshold to be tuned for robot
@@ -23,16 +21,10 @@ public class CollisionDetection {
     LinearFilter yFilter = LinearFilter.movingAverage(10);
   
     /** Collision Detection based on RIO's accelerometer! */
-    private CollisionDetection() {
+  public CollisionDetection() {
       accelerometer = new BuiltInAccelerometer();
     }
-  
-    public static CollisionDetection getInstance() {
-      if (instance == null) {
-      instance = new CollisionDetection();
-    }
-    return instance;
-  }
+
 
   // use if needed for triggers
   public BooleanSupplier getDetection = this::CollisionDetected;
@@ -54,7 +46,4 @@ public class CollisionDetection {
         || (Math.abs(filteredYJerk) > CollisionThreshold);
   }
 
-  public Trigger DetectionTrigger() {
-    return new Trigger(getDetection);
-  }
 }
