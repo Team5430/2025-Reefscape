@@ -7,10 +7,11 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.superstructure.SuperConstants.AlgaeConstants;
 
-public class AlgaeIntakeSRX implements AlgaeIO {
+public class AlgaeIntakeSRX extends SubsystemBase implements AlgaeIO  {
 
 
 //save state, and start off as idle
@@ -75,7 +76,7 @@ public class AlgaeIntakeSRX implements AlgaeIO {
             () -> {
                 pivot_L.set(ControlMode.Position, savedState.POSITION);
                // rollers.set(ControlMode.PercentOutput, savedState.OUTPUT);
-                }
+                }, this
             )
         //register command
         .withName("Algae Intake" + savedState.toString());

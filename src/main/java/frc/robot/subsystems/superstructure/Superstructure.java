@@ -28,16 +28,22 @@ public class Superstructure extends ControlSystem{
 
     }
 
-
     //set superstructure state
     private Command setState(SuperState state){
         savedState = state;
-        return Commands.parallel(
-            algae.setState(state.algaeState)
+        return Commands.runOnce(
+            () -> {
+                algae.setState(state.algaeState);
+            }, this
+            
         );
     }
 
     //commands for superstructure
+    public Command ALGAE_IN(){
+        return setState(SuperState.ALGAE_IN);
+    }
+
 
 
 //TODO: implement

@@ -67,6 +67,11 @@ public class RobotContainer {
     RobotStatus = new Alert("ROBOT IS STOPPED", AlertType.kError);
     RobotStatus.set(false);
 
+    // Initialize feedback
+    mControllerManager = ControllerManager.getInstance();
+    collisionFeedback = new CollisionDetection();
+
+
           // Initialize subsystems based on robot mode
           switch (Constants.getRobot()) {
             case SIM_ROBOT:
@@ -78,11 +83,16 @@ public class RobotContainer {
               break;
             case REAL_ROBOT:
                 mDrive = new DriveControlSystem();
+                driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getRightX, mDrive);
                 m_Superstructure = new Superstructure(new AlgaeIntakeSRX());
+
+                /* 
+                
                 m_Vision = new VisionSub(
                   new LimelightIO("limelight", Constants.VisionConstants.CameraToRobot),
                   new PhotonCameraIO("photon")
                 );
+                */
 
                 configureBindings(RobotType.REAL_ROBOT);
               break;
@@ -97,10 +107,6 @@ public class RobotContainer {
 
     // Initialize control system manager
     controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
-
-    // Initialize feedback
-    mControllerManager = ControllerManager.getInstance();
-    collisionFeedback = new CollisionDetection();
 
     // Initialize odometry
     odometryThread = new Odometry(mDrive, m_Vision);
@@ -117,7 +123,6 @@ public class RobotContainer {
     SmartDashboard.putData("Test Chooser", testChooser);
 
     // Default commands
-    driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getRightX, mDrive);
 
         
       }
@@ -133,7 +138,7 @@ public class RobotContainer {
 
               mControllerManager
           .getRightTrigger()
-          .and(m_Vision.TagInRange)
+        //  .and(m_Vision.TagInRange)
           .whileTrue(
             driveCommand
               .withX(m_Vision::proportionalRange)
@@ -157,11 +162,11 @@ public class RobotContainer {
               // TODO: test -> NOTE: overrides normal drive control !!!
               mControllerManager
           .getRightTrigger()
-          .and(m_Vision.TagInRange)
+        //  .and(m_Vision.TagInRange)
           .onTrue(
             driveCommand
-              .withX(m_Vision::proportionalRange)
-              .withRotation(m_Vision::proportionalAim)
+    //          .withX(m_Vision::proportionalRange)
+      //        .withRotation(m_Vision::proportionalAim)
           );
 
               feedback

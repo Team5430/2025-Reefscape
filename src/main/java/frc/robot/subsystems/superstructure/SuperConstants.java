@@ -5,8 +5,9 @@ public class SuperConstants {
 
     public class AlgaeConstants {
         public static final int ROLLER_CANID = 20;
-        public static final int L_PIVOT_CANID = 21;
-        public static final int R_PIVOT_CANID = 22;
+        public static final int R_PIVOT_CANID = 21;
+        public static final int L_PIVOT_CANID = 22;
+
     
         //pivot gear ratio
         public static final double PIVOT_GRATIO = 1;
