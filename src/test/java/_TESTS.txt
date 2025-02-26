@@ -1,0 +1,5 @@
+We utilize tests to make sure key components of the code can compile, and if there were to be any problems,
+the debugger would be able to pinpoint what is the problem based on the tests that pass.
+If all pass, that means there is a logic error, within the code, or an object in the code is not being initialzed correctly.
+Otherwise, if a test DOES fail, make sure the object declarations are not leading to null pointers. 
+-Ramon Ledesma 02/25/25

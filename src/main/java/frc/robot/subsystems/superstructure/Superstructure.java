@@ -23,7 +23,7 @@ public class Superstructure extends ControlSystem{
 
     //defaults all to idle
         setDefaultCommand(
-             setState(SuperState.IDLE)
+            IDLE()
         );
 
     }
@@ -42,6 +42,18 @@ public class Superstructure extends ControlSystem{
     //commands for superstructure
     public Command ALGAE_IN(){
         return setState(SuperState.ALGAE_IN);
+    }
+
+    public Command ALGAE_OUT(){
+        return setState(SuperState.ALGAE_OUT);
+    }
+
+    public Command CORAL_STATION(){
+        return setState(SuperState.CORAL_STATION);
+    }
+
+    public Command IDLE(){
+        return setState(SuperState.IDLE);
     }
 
 

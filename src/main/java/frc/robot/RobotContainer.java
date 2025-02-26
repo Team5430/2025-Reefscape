@@ -113,6 +113,8 @@ public class RobotContainer {
 
     // Pathplanner example to register commands for GUI usage
     NamedCommands.registerCommand("Score Algae", new PrintCommand("SCORED ALGAE"));
+    NamedCommands.registerCommand("Pickup Algae", new PrintCommand("PICKED UP ALGAE"));
+
 
     // Setup auto chooser
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -137,13 +139,12 @@ public class RobotContainer {
               mDrive.setDefaultCommand(driveCommand);
 
               mControllerManager
-          .getRightTrigger()
+          .getRightTrigger();
         //  .and(m_Vision.TagInRange)
-          .whileTrue(
-            driveCommand
-              .withX(m_Vision::proportionalRange)
-              .withRotation(m_Vision::proportionalAim)
-          );
+         //   .whileTrue(driveCommand)
+        //      .withX(m_Vision::proportionalRange)
+         //     .withRotation(m_Vision::proportionalAim)
+          
           
               mControllerManager
           .getOverride()
