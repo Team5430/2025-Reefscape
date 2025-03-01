@@ -15,7 +15,7 @@ public class SuperConstants {
         //TODO: tune these values
 
         //PID values for pivot
-        public static final double PIVOT_KP = .1;
+        public static final double PIVOT_KP = 2;
         public static final double PIVOT_KI = 0;
         public static final double PIVOT_KD = 0;
 

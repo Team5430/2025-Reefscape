@@ -86,11 +86,12 @@ public class ControllerManager {
   }
   
   public Trigger getAlgaeOut(){
-    return controlBoard.button(13);
+    return controlBoard.button(12);
   }
   
   public Trigger getOverride(){
     return controlBoard.button(6);
   }
+
 
 }

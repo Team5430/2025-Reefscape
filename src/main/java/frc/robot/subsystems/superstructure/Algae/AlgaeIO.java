@@ -5,9 +5,9 @@ public interface AlgaeIO {
     //declare algae states
     //starts with letter of corresponding system
     enum Algaestate{
-        IDLE(0,0),
-        INTAKE(45, -1),
-        OUTTAKE(25, 1);
+        IDLE(-303, 0),
+        INTAKE(-341, .2),
+        OUTTAKE(25, .2);
     
         public double POSITION;
         public double OUTPUT;

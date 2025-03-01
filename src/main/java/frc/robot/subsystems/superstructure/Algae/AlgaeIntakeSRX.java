@@ -5,7 +5,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.superstructure.SuperConstants.AlgaeConstants;
 
@@ -40,7 +40,6 @@ public class AlgaeIntakeSRX implements AlgaeIO  {
         pivot_R.configFactoryDefault();
     
     //tell motor on right to follow same output
-        pivot_R.follow(pivot_L);
     //select SRX magencoder for feedback
         pivot_L.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
     //invert sensor readings
@@ -54,10 +53,11 @@ public class AlgaeIntakeSRX implements AlgaeIO  {
         pivot_L.config_kD(0, AlgaeConstants.PIVOT_KD);
 
     //not inverted because it is mechanically designed to be opposite
+        pivot_R.follow(pivot_L);
         pivot_R.setInverted(InvertType.FollowMaster);
 
     //Zero position on the pivot
-        pivot_L.setSelectedSensorPosition(0);
+       // pivot_L.setSelectedSensorPosition(0);
 
 
         //TODO: current limitings
@@ -80,9 +80,15 @@ public class AlgaeIntakeSRX implements AlgaeIO  {
         return degrees * 4096 / 360;
     }
 
+    private double tickstoDegrees(double ticks){
+        return ticks * 360 /4096;
+    }
+
     public void runOpenLoop(double speed){
         pivot_L.set(ControlMode.PercentOutput, speed);
+        SmartDashboard.putNumber("Encoder angle", tickstoDegrees(pivot_L.getSelectedSensorPosition()));
     }
+
 
 //triggers to check the state
     public Trigger isIdle = new Trigger(() -> savedState == Algaestate.IDLE);

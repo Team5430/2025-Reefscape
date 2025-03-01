@@ -10,6 +10,7 @@ import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -66,7 +67,13 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void robotInit() {
+  public void robotInit() 
+  {
+  // Make sure only configure port forwarding once in your robot code.
+  //Don not place these function calls in any periodic functions
+  for (int port = 5800; port <= 5809; port++) {
+  PortForwarder.add(port, "limelight.local", port);
+   }
     
     FollowPathCommand.warmupCommand().schedule();
   }

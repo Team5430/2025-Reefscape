@@ -28,6 +28,7 @@ import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.Algae.AlgaeIntakeSRX;
+import frc.robot.subsystems.superstructure.Algae.AlgaeIO.Algaestate;
 import frc.robot.subsystems.drive.DriveControlSystem;
 import frc.robot.subsystems.vision.LimelightIO;
 import frc.robot.subsystems.vision.PhotonCameraIO;
@@ -177,15 +178,16 @@ public class RobotContainer {
       //temporary algae bindings
               mControllerManager
           .getAlgaeIn()
-          .onTrue(new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(.1)))
-          .onFalse( new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(0)));
+          .onTrue(new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.INTAKE)))
+          .onFalse( new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.IDLE)));
           
               mControllerManager
           .getAlgaeOut()
-          .onTrue(new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(-.1)))
+          .onTrue(new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(-.7)))
           .onFalse( new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(0)));
 
-              break;
+
+        break;
 
       case TUNING_ROBOT:
               // setup SysId bindings
