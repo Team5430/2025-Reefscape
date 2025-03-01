@@ -1,7 +1,5 @@
 package frc.robot.subsystems.superstructure.Algae;
 
-import edu.wpi.first.wpilibj2.command.Command;
-
 public interface AlgaeIO {
 
     //declare algae states
@@ -22,7 +20,7 @@ public interface AlgaeIO {
     }
 
     //all implmenting classes must set the algae intake's state
-    public Command setState(Algaestate state);
+    public void setState(Algaestate state);
 
     //misc for data logging or other
     public void periodic();

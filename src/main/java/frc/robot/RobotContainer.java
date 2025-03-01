@@ -46,8 +46,8 @@ public class RobotContainer {
       @Logged
       protected DriveControlSystem mDrive;
       protected VisionSub m_Vision;
-      protected Superstructure m_Superstructure;
-  
+      protected AlgaeIntakeSRX m_AlgaeIntake;
+
     //Odometry
       @Logged
       protected Odometry odometryThread;
@@ -76,7 +76,7 @@ public class RobotContainer {
           switch (Constants.getRobot()) {
             case SIM_ROBOT:
                 mDrive = new DriveControlSystem();
-                m_Superstructure = null;
+           //     m_Superstructure = null;
                 m_Vision = new VisionSub(new SimulatedCameraIO("SimCAMERA1", Constants.VisionConstants.CameraToRobot));
 
                 configureBindings(RobotType.SIM_ROBOT);
@@ -84,8 +84,8 @@ public class RobotContainer {
             case REAL_ROBOT:
                 mDrive = new DriveControlSystem();
                 driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getRightX, mDrive);
-                m_Superstructure = new Superstructure(new AlgaeIntakeSRX());
-
+             //   m_Superstructure = new Superstructure(new AlgaeIntakeSRX());
+                m_AlgaeIntake = new AlgaeIntakeSRX();
                 /* 
                 
                 m_Vision = new VisionSub(
@@ -98,7 +98,7 @@ public class RobotContainer {
               break;
             case TUNING_ROBOT:
                 mDrive = new DriveControlSystem();
-                m_Superstructure = null;
+                //m_Superstructure = null;
                 m_Vision = new VisionSub();
 
                 configureBindings(RobotType.TUNING_ROBOT);
@@ -173,7 +173,18 @@ public class RobotContainer {
               feedback
           .onTrue(mControllerManager.setDriverRumble(true))
           .onFalse(mControllerManager.setDriverRumble(false));
+
+      //temporary algae bindings
+              mControllerManager
+          .getAlgaeIn()
+          .onTrue(new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(.1)))
+          .onFalse( new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(0)));
           
+              mControllerManager
+          .getAlgaeOut()
+          .onTrue(new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(-.1)))
+          .onFalse( new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(0)));
+
               break;
 
       case TUNING_ROBOT:

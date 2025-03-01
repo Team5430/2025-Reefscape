@@ -5,13 +5,11 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.superstructure.SuperConstants.AlgaeConstants;
 
-public class AlgaeIntakeSRX extends SubsystemBase implements AlgaeIO  {
+public class AlgaeIntakeSRX implements AlgaeIO  {
 
 
 //save state, and start off as idle
@@ -44,7 +42,7 @@ public class AlgaeIntakeSRX extends SubsystemBase implements AlgaeIO  {
     //tell motor on right to follow same output
         pivot_R.follow(pivot_L);
     //select SRX magencoder for feedback
-        pivot_L.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0 ,10);
+        pivot_L.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
     //invert sensor readings
         pivot_L.setSensorPhase(true);
     //invert motor output ^ does not affect sensor phase
@@ -61,6 +59,7 @@ public class AlgaeIntakeSRX extends SubsystemBase implements AlgaeIO  {
     //Zero position on the pivot
         pivot_L.setSelectedSensorPosition(0);
 
+
         //TODO: current limitings
 
         
@@ -68,18 +67,21 @@ public class AlgaeIntakeSRX extends SubsystemBase implements AlgaeIO  {
 
 //coontrol the flow of states; pass them through a single function to keep track of states
 @Override
-    public Command setState(Algaestate wantedState){
+    public void setState(Algaestate wantedState){
         //save state
         savedState = wantedState;
-        //tell motors to shift their setpoints to wanted state
-        return Commands.runOnce(
-            () -> {
-                pivot_L.set(ControlMode.Position, savedState.POSITION);
-               // rollers.set(ControlMode.PercentOutput, savedState.OUTPUT);
-                }, this
-            )
-        //register command
-        .withName("Algae Intake" + savedState.toString());
+        //tell motors to shift their setpoints to wanted state        
+                pivot_L.set(ControlMode.Position, degreestoTicks(savedState.POSITION));
+               rollers.set(ControlMode.PercentOutput, savedState.OUTPUT);
+    }
+
+    //convert degrees to ticks as the magencoder reads in ticks; 4096 ticks per rotation per documentation
+    private double degreestoTicks(double degrees){
+        return degrees * 4096 / 360;
+    }
+
+    public void runOpenLoop(double speed){
+        pivot_L.set(ControlMode.PercentOutput, speed);
     }
 
 //triggers to check the state

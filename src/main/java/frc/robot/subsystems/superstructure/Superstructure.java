@@ -36,7 +36,7 @@ public class Superstructure extends ControlSystem{
                 algae.setState(state.algaeState);
             }, this
             
-        );
+        ).withName("Superstructure State: " + state.toString());
     }
 
     //commands for superstructure

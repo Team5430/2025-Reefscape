@@ -27,6 +27,7 @@ public class DriveControlSystem extends ControlSystem {
     // Swerve DriveTrain
     protected SwerveModuleGroup driveTrain;
 
+    
     // Gyro
     public AHRS mGyro;
 
@@ -118,6 +119,7 @@ public class DriveControlSystem extends ControlSystem {
 
     public ChassisSpeeds getCurrentSpeeds() {
         return driveTrain.getCurrentSpeeds();
+
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -153,6 +155,7 @@ public class DriveControlSystem extends ControlSystem {
     public synchronized void Stop() {
         driveTrain.Stop();
     }
+
 
     @Override
     public void simulationPeriodic() {
