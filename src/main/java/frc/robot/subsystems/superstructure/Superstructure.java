@@ -22,59 +22,25 @@ public class Superstructure extends ControlSystem{
 
 
     //defaults all to idle
-        setDefaultCommand(
-            IDLE()
-        );
+  
 
     }
-
-    //set superstructure state
-    private Command setState(SuperState state){
-        savedState = state;
-        return Commands.runOnce(
-            () -> {
-                algae.setState(state.algaeState);
-            }, this
-            
-        ).withName("Superstructure State: " + state.toString());
-    }
-
-    //commands for superstructure
-    public Command ALGAE_IN(){
-        return setState(SuperState.ALGAE_IN);
-    }
-
-    public Command ALGAE_OUT(){
-        return setState(SuperState.ALGAE_OUT);
-    }
-
-    public Command CORAL_STATION(){
-        return setState(SuperState.CORAL_STATION);
-    }
-
-    public Command IDLE(){
-        return setState(SuperState.IDLE);
-    }
-
 
 
 //TODO: implement
     @Override
     public void Stop() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'Stop'");
+        
     }
 
     @Override
     public boolean configureTest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'configureTest'");
+       return false;
     }
 
     @Override
     public boolean checkStatus() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'checkStatus'");
+        return true;
     }
     
     @Override

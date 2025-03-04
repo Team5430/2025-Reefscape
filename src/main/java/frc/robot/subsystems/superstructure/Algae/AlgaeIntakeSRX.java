@@ -6,10 +6,14 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.subsystems.superstructure.SuperConstants.AlgaeConstants;
 
-public class AlgaeIntakeSRX implements AlgaeIO  {
+public class AlgaeIntakeSRX extends SubsystemBase implements AlgaeIO  {
 
 
 //save state, and start off as idle
@@ -66,22 +70,49 @@ public class AlgaeIntakeSRX implements AlgaeIO  {
     }
 
 //coontrol the flow of states; pass them through a single function to keep track of states
-@Override
-    public void setState(Algaestate wantedState){
+    private Command setState(Algaestate wantedState){
         //save state
         savedState = wantedState;
-        //tell motors to shift their setpoints to wanted state        
+        return Commands.runOnce(
+            () -> {
+            //tell motors to shift their setpoints to wanted state        
                 pivot_L.set(ControlMode.Position, degreestoTicks(savedState.POSITION));
-               rollers.set(ControlMode.PercentOutput, savedState.OUTPUT);
+                rollers.set(ControlMode.PercentOutput, savedState.OUTPUT);
+            }, this)
+            .withName(wantedState.name());
+       
     }
 
+    
+
+    @Override
+    public Command IDLE() {
+        return setState(Algaestate.IDLE);
+    }
+
+    @Override
+    public Command INTAKE() {
+        return setState(Algaestate.INTAKE);
+    }
+
+    @Override
+    public Command KEEP_BALL() {
+        return setState(Algaestate.KEEP_BALL);
+    }
+
+    @Override
+    public Command OUTTAKE() {
+        return setState(Algaestate.OUTTAKE);
+    }
+    
     //convert degrees to ticks as the magencoder reads in ticks; 4096 ticks per rotation per documentation
     private double degreestoTicks(double degrees){
         return degrees * 4096 / 360;
     }
 
+    //convert encoder ticks into degrees 
     private double tickstoDegrees(double ticks){
-        return ticks * 360 /4096;
+        return ticks * 360 / 4096;
     }
 
     public void runOpenLoop(double speed){
@@ -101,5 +132,5 @@ public class AlgaeIntakeSRX implements AlgaeIO  {
 //for any sensor verification or logging
     @Override
     public void periodic(){}
-    
+
 }

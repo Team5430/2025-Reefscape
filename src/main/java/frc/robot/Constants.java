@@ -63,7 +63,7 @@ public  class Constants {
     // position of camera relative to the robots center
     public static Transform3d CameraToRobot = new Transform3d();
     // name of camera as set in the settings
-    public static String CameraName = "5430_Camera";
+    public static String CameraName = "limelight-driver";
     // Tag ids to track; ignore others
     public static int[] ids = {1, 2, 3};
     //vision assisted driving PID values

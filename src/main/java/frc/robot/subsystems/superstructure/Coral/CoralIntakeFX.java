@@ -32,8 +32,6 @@ public class CoralIntakeFX extends SubsystemBase implements CoralIO {
     }
 
     public void periodic() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'periodic'");
     }
     
 }

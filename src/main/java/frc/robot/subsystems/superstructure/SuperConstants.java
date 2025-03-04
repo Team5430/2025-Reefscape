@@ -15,12 +15,12 @@ public class SuperConstants {
         //TODO: tune these values
 
         //PID values for pivot
-        public static final double PIVOT_KP = 2;
+        public static final double PIVOT_KP = 5;
         public static final double PIVOT_KI = 0;
         public static final double PIVOT_KD = 0;
 
         //current limit for pivot
-        public static final int PIVOT_CURRENT_LIMIT = 0;
+        public static final int PIVOT_CURRENT_LIMIT = 30;
     
         
     }

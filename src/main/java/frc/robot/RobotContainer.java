@@ -12,8 +12,7 @@ import com.team5430.control.ControllerManager;
 import com.team5430.control.ControlSystemManager;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
+
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -28,7 +27,6 @@ import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.Algae.AlgaeIntakeSRX;
-import frc.robot.subsystems.superstructure.Algae.AlgaeIO.Algaestate;
 import frc.robot.subsystems.drive.DriveControlSystem;
 import frc.robot.subsystems.vision.LimelightIO;
 import frc.robot.subsystems.vision.PhotonCameraIO;
@@ -171,20 +169,25 @@ public class RobotContainer {
       //        .withRotation(m_Vision::proportionalAim)
           );
 
-              feedback
-          .onTrue(mControllerManager.setDriverRumble(true))
-          .onFalse(mControllerManager.setDriverRumble(false));
 
       //temporary algae bindings
               mControllerManager
           .getAlgaeIn()
-          .onTrue(new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.INTAKE)))
-          .onFalse( new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.IDLE)));
+          .onTrue(m_AlgaeIntake.INTAKE())
+          .onFalse(m_AlgaeIntake.KEEP_BALL());
           
               mControllerManager
           .getAlgaeOut()
-          .onTrue(new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(-.7)))
-          .onFalse( new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(0)));
+          .onTrue(m_AlgaeIntake.OUTTAKE())
+          .onFalse(m_AlgaeIntake.IDLE());
+
+        //used to cancel out intake incase there is no ball
+            mControllerManager
+          .getAlgaeIn()
+          .and(
+            mControllerManager.getAlgaeOut()
+          )
+          .onTrue(m_AlgaeIntake.IDLE());
 
 
         break;
