@@ -6,8 +6,8 @@ public interface AlgaeIO {
     //starts with letter of corresponding system
     enum Algaestate{
         IDLE(-303, 0),
-        INTAKE(-341, .2),
-        OUTTAKE(-321, -.2);
+        INTAKE(-351, -.5),
+        OUTTAKE(-321, .5);
     
         public double POSITION;
         public double OUTPUT;

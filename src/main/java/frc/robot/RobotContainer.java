@@ -12,10 +12,13 @@ import com.team5430.control.ControllerManager;
 import com.team5430.control.ControlSystemManager;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -62,11 +65,16 @@ public class RobotContainer {
 
     //Alerts
       private Alert RobotStatus;
+
+    private PowerDistribution m_PDH;
+
     
     public RobotContainer() {
     // Initialize stopping alert
     RobotStatus = new Alert("ROBOT IS STOPPED", AlertType.kError);
     RobotStatus.set(false);
+
+    m_PDH = new PowerDistribution(1, ModuleType.kCTRE);
 
     // Initialize feedback
     mControllerManager = ControllerManager.getInstance();
@@ -205,6 +213,7 @@ public class RobotContainer {
               break;
           }
         }
+        
       // configure tests for each control system
       public void configureTests(){
 
