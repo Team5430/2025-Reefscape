@@ -183,8 +183,8 @@ public class RobotContainer {
           
               mControllerManager
           .getAlgaeOut()
-          .onTrue(new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(-.7)))
-          .onFalse( new InstantCommand(() -> m_AlgaeIntake.runOpenLoop(0)));
+          .onTrue(new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.OUTTAKE)))
+          .onFalse( new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.IDLE)));
 
 
         break;
