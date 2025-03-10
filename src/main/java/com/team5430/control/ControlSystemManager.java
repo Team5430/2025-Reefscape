@@ -37,19 +37,19 @@ public class ControlSystemManager {
         }
 
     
-        public static SendableChooser<Boolean> buildTestChooser() {
-            SendableChooser<Boolean> controlSystemChooser = new SendableChooser<Boolean>();
-            
-            //save list of control systems
-            var _controlSystems = getInstance().controlSystems;
-            
-            //add default option as None
-            controlSystemChooser.setDefaultOption("None", false);
-    
-            //add options to test each control system
-            for (ControlSystem cs : _controlSystems ) {
-            controlSystemChooser.addOption(cs.getName(), cs.configureTest());
-        }
+    public static SendableChooser<Boolean> buildTestChooser() {
+        SendableChooser<Boolean> controlSystemChooser = new SendableChooser<Boolean>();
+        
+        //save list of control systems
+        var _controlSystems = getInstance().controlSystems;
+        
+        //add default option as None
+        controlSystemChooser.setDefaultOption("None", false);
+
+        //add options to test each control system
+        for (ControlSystem cs : _controlSystems ) {
+        controlSystemChooser.addOption(cs.getName(), cs.configureTest());
+    }
 
         //assume all tests will pass
         var testAll = true;

@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.superstructure.SuperConstants.AlgaeConstants;
@@ -17,10 +18,10 @@ public class AlgaeIntakeSRX implements AlgaeIO  {
 
 
 //declare motors
-
     private TalonSRX pivot_L;
     private TalonSRX pivot_R;
     private TalonSRX rollers;
+
 
 //runs on instance declaration -> settings to be set here.
 //TODO: fix can ids 
@@ -65,7 +66,7 @@ public class AlgaeIntakeSRX implements AlgaeIO  {
         
     }
 
-//coontrol the flow of states; pass them through a single function to keep track of states
+//control the flow of states; pass them through a single function to keep track of states
 @Override
     public void setState(Algaestate wantedState){
         //save state
@@ -75,7 +76,7 @@ public class AlgaeIntakeSRX implements AlgaeIO  {
                rollers.set(ControlMode.PercentOutput, savedState.OUTPUT);
     }
 
-    //convert degrees to ticks as the magencoder reads in ticks; 4096 ticks per rotation per documentation
+//convert degrees to ticks as the magencoder reads in ticks; 4096 ticks per rotation per documentation
     private double degreestoTicks(double degrees){
         return degrees * 4096 / 360;
     }
@@ -89,7 +90,6 @@ public class AlgaeIntakeSRX implements AlgaeIO  {
         SmartDashboard.putNumber("Encoder angle", tickstoDegrees(pivot_L.getSelectedSensorPosition()));
     }
 
-
 //triggers to check the state
     public Trigger isIdle = new Trigger(() -> savedState == Algaestate.IDLE);
 
@@ -97,6 +97,10 @@ public class AlgaeIntakeSRX implements AlgaeIO  {
 
     public Trigger isOuttaking = new Trigger(() -> savedState == Algaestate.OUTTAKE);
 
+//get the current state
+    public String getState(){
+        return savedState.toString();
+    }
 
 //for any sensor verification or logging
     @Override

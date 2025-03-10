@@ -12,13 +12,10 @@ import com.team5430.control.ControllerManager;
 import com.team5430.control.ControlSystemManager;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.Logged.Importance;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -66,15 +63,12 @@ public class RobotContainer {
     //Alerts
       private Alert RobotStatus;
 
-    private PowerDistribution m_PDH;
-
     
     public RobotContainer() {
+
     // Initialize stopping alert
     RobotStatus = new Alert("ROBOT IS STOPPED", AlertType.kError);
     RobotStatus.set(false);
-
-    m_PDH = new PowerDistribution(1, ModuleType.kCTRE);
 
     // Initialize feedback
     mControllerManager = ControllerManager.getInstance();
@@ -85,15 +79,19 @@ public class RobotContainer {
           switch (Constants.getRobot()) {
             case SIM_ROBOT:
                 mDrive = new DriveControlSystem();
-           //     m_Superstructure = null;
+            //  m_Superstructure = null;
                 m_Vision = new VisionSub(new SimulatedCameraIO("SimCAMERA1", Constants.VisionConstants.CameraToRobot));
 
                 configureBindings(RobotType.SIM_ROBOT);
               break;
             case REAL_ROBOT:
                 mDrive = new DriveControlSystem();
-                driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getRightX, mDrive);
-             //   m_Superstructure = new Superstructure(new AlgaeIntakeSRX());
+                driveCommand = new DriveCommand(
+                  mControllerManager::getX,
+                  mControllerManager::getY,
+                  mControllerManager::getRightX, mDrive);
+
+            //  m_Superstructure = new Superstructure(new AlgaeIntakeSRX());
                 m_AlgaeIntake = new AlgaeIntakeSRX();
                 /* 
                 
@@ -120,10 +118,8 @@ public class RobotContainer {
     // Initialize odometry
     odometryThread = new Odometry(mDrive, m_Vision);
 
-    // Pathplanner example to register commands for GUI usage
-    NamedCommands.registerCommand("Score Algae", new PrintCommand("SCORED ALGAE"));
-    NamedCommands.registerCommand("Pickup Algae", new PrintCommand("PICKED UP ALGAE"));
-
+    // Register commands for Pathplanner
+    registerCommands();
 
     // Setup auto chooser
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -132,72 +128,27 @@ public class RobotContainer {
     // Setup test chooser
     testChooser = ControlSystemManager.buildTestChooser();
     SmartDashboard.putData("Test Chooser", testChooser);
-
-    // Default commands
-
         
-      }
+    }
         // controller bindings here
         private void configureBindings(RobotType robotMode) {
-          Trigger feedback = new Trigger(collisionFeedback.getDetection);
 
           // setup controls depending on robot type 
-          switch (robotMode) {
-      case SIM_ROBOT:
-              // setup drive
-              mDrive.setDefaultCommand(driveCommand);
-
-              mControllerManager
-          .getRightTrigger();
-        //  .and(m_Vision.TagInRange)
-         //   .whileTrue(driveCommand)
-        //      .withX(m_Vision::proportionalRange)
-         //     .withRotation(m_Vision::proportionalAim)
-          
-          
-              mControllerManager
-          .getOverride()
-          .whileTrue(new InstantCommand(() -> Stop()))
-          .onFalse(new InstantCommand(() -> RobotStatus.set(false)));
+            switch (robotMode) {
+            case SIM_ROBOT:
+              configureDriveBindings(true);
+              configureGeneralBindings(true);
               break;
 
-      case REAL_ROBOT:
-              // setup drive
-              mDrive.setDefaultCommand(
-          driveCommand
-            .withRotation(mControllerManager::getRightX)
-              );
-
-              // Auto aim and direct towards april tag in sight
-              // TODO: test -> NOTE: overrides normal drive control !!!
-              mControllerManager
-          .getRightTrigger()
-        //  .and(m_Vision.TagInRange)
-          .onTrue(
-            driveCommand
-    //          .withX(m_Vision::proportionalRange)
-      //        .withRotation(m_Vision::proportionalAim)
-          );
-
-              feedback
-          .onTrue(mControllerManager.setDriverRumble(true))
-          .onFalse(mControllerManager.setDriverRumble(false));
-
-      //temporary algae bindings
-              mControllerManager
-          .getAlgaeIn()
-          .onTrue(new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.INTAKE)))
-          .onFalse( new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.IDLE)));
-          
-              mControllerManager
-          .getAlgaeOut()
-          .onTrue(new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.OUTTAKE)))
-          .onFalse( new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.IDLE)));
-
-
-        break;
-
-      case TUNING_ROBOT:
+          //disable if any subsystem is unavailable
+            case REAL_ROBOT:
+              configureDriveBindings(true);
+              configureVisionBindings(true);
+              configureAlgaeBindings(true);
+              configureGeneralBindings(true);
+              break;
+            
+            case TUNING_ROBOT:
               // setup SysId bindings
               // phoenix logger
               /*
@@ -211,11 +162,92 @@ public class RobotContainer {
               mControllerManager.A().whileTrue(mDrive.sysIdDynamic(Direction.kReverse));
               */
               break;
-          }
+            }
         }
-        
-      // configure tests for each control system
-      public void configureTests(){
+
+    // configure drive bindings
+      private void configureDriveBindings(boolean enabled) {
+            if (!enabled) return;
+          //Feedback for controllers
+
+            mDrive.setDefaultCommand(driveCommand);
+
+            mControllerManager
+            .getRightTrigger()
+            .onTrue(driveCommand);
+
+            mControllerManager
+            .getOverride()
+            .whileTrue(new InstantCommand(() -> Stop()))
+            .onFalse(new InstantCommand(() -> RobotStatus.set(false)));
+          }
+    // configure vision bindings
+      private void configureVisionBindings(boolean enabled) {
+            if (!enabled) return;
+            Trigger feedback = new Trigger(collisionFeedback.getDetection);
+
+            mDrive.setDefaultCommand(
+            driveCommand.withRotation(mControllerManager::getRightX)
+            );
+
+            mControllerManager
+            .getRightTrigger()
+            .onTrue(driveCommand);
+
+            feedback
+            .onTrue(mControllerManager.setDriverRumble(true))
+            .onFalse(mControllerManager.setDriverRumble(false));
+          }
+    // configure algae bindings
+      private void configureAlgaeBindings(boolean enabled) {
+            if (!enabled) return;
+
+            mControllerManager
+            .getAlgaeIn()
+            .onTrue(new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.INTAKE)))
+            .onFalse(new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.IDLE)));
+
+            mControllerManager
+            .getAlgaeOut()
+            .onTrue(new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.OUTTAKE)))
+            .onFalse(new InstantCommand(() -> m_AlgaeIntake.setState(Algaestate.IDLE)));
+          }
+    // configure general bindings
+      private void configureGeneralBindings(boolean enabled) {
+            if (!enabled) return;
+
+            // Add any general bindings that apply to all robot types here
+          }
+
+    // Named commands for Pathplanner
+      private void registerCommands() {
+                      
+              // Pathplanner example to register commands for GUI usage
+              NamedCommands.registerCommand("Score Algae", new PrintCommand("SCORED ALGAE"));
+              NamedCommands.registerCommand("Pickup Algae", new PrintCommand("PICKED UP ALGAE"));   
+          }
+
+      // stops and resets all control systems
+      public void Stop(){
+        controlSystemManager.stopAll();
+        RobotStatus.set(true);
+      }
+
+      // get auto command
+      public Command getAutonomousCommand(){
+        return autoChooser.getSelected();
+      }
+
+      // publish to dashboard
+      public void publishToDashboard(){
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+        SmartDashboard.putString("ALGAE STATE", m_AlgaeIntake.getState());
+             
+      }
+
+
+       // configure tests for each control system
+       public void configureTests(){
 
         var testTab = Shuffleboard.getTab("Tests");
         
@@ -231,17 +263,5 @@ public class RobotContainer {
           }
         } 
       }
-
-      // stops and resets all control systems
-      public void Stop(){
-        controlSystemManager.stopAll();
-        RobotStatus.set(true);
-      }
-
-      // get auto command
-      public Command getAutonomousCommand(){
-        return autoChooser.getSelected();
-      }
-
   
 }

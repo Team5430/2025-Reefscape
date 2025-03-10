@@ -12,9 +12,7 @@ import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 @Logged
@@ -30,6 +28,7 @@ public class Robot extends TimedRobot {
 
   //update odometry in the background
   addPeriodic(m_robotContainer.odometryThread::updateOdometry, .02);
+  addPeriodic(m_robotContainer::publishToDashboard, .02);
 
 // Configure Epilogue logging
     Epilogue.configure(config -> {

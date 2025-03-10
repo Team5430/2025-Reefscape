@@ -20,8 +20,7 @@ public class SuperConstants {
         public static final double PIVOT_KD = 0;
 
         //current limit for pivot
-        public static final int PIVOT_CURRENT_LIMIT = 0;
-    
+        public static final int PIVOT_CURRENT_LIMIT = 30;
         
     }
 
