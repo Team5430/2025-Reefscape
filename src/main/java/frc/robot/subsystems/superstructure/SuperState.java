@@ -1,7 +1,7 @@
 package frc.robot.subsystems.superstructure;
 
-import frc.robot.subsystems.superstructure.Algae.AlgaeIO.Algaestate;
-import frc.robot.subsystems.superstructure.Coral.CoralIO.CoralState;
+import frc.robot.subsystems.superstructure.Algae.AlgaeIntakeSRX.Algaestate;
+import frc.robot.subsystems.superstructure.Coral.CoralIntakeFX.CoralState;
 
 public enum SuperState {
     IDLE(Algaestate.IDLE, CoralState.IDLE),

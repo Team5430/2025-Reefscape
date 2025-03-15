@@ -40,6 +40,14 @@ public class SuperConstants {
     }
 
     public class ElevatorConstants{
+        public static final int L_CANID = 0;
+        public static final int R_CANID = 0; 
+
+        //elevator gear ratio
+        public static final int ELEVATOR_GRATIO = 7;
+
+        //PID constants
+        public static final int ELEVATOR_KP = 1;
 
     }
     

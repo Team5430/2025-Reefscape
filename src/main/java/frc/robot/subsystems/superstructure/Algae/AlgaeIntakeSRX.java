@@ -8,15 +8,33 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.subsystems.superstructure.SuperConstants.AlgaeConstants;
 
-public class AlgaeIntakeSRX extends SubsystemBase implements AlgaeIO  {
 
+public class AlgaeIntakeSRX extends SubsystemBase  {
 
-//save state, and start off as idle
+//save state, and start off as idle    //declare algae states
+    //starts with letter of corresponding system
+  public  enum Algaestate{
+        IDLE(-30, 0),
+        INTAKE(-71, -.3),
+        OUTTAKE(-90, .6);
+    
+        public double POSITION;
+        public double OUTPUT;
+
+        private Algaestate(double POSITION, double OUTPUT){
+            this.POSITION = POSITION;
+            this.OUTPUT = OUTPUT;
+        }
+
+    }
+
     private Algaestate savedState = Algaestate.IDLE;
 
 
@@ -70,39 +88,34 @@ public class AlgaeIntakeSRX extends SubsystemBase implements AlgaeIO  {
     }
 
 //coontrol the flow of states; pass them through a single function to keep track of states
-    private Command setState(Algaestate wantedState){
+    public void setState(Algaestate wantedState){
         //save state
         savedState = wantedState;
-        return Commands.runOnce(
-            () -> {
             //tell motors to shift their setpoints to wanted state        
                 pivot_L.set(ControlMode.Position, degreestoTicks(savedState.POSITION));
                 rollers.set(ControlMode.PercentOutput, savedState.OUTPUT);
-            }, this)
-            .withName(wantedState.name());
        
     }
-
     
 
-    @Override
     public Command IDLE() {
-        return setState(Algaestate.IDLE);
+        return new InstantCommand(
+            () -> setState(Algaestate.IDLE), this
+            );
     }
 
-    @Override
+
     public Command INTAKE() {
-        return setState(Algaestate.INTAKE);
+        return new InstantCommand(
+            () -> setState(Algaestate.INTAKE), this
+        );
+        
     }
-
-    @Override
-    public Command KEEP_BALL() {
-        return setState(Algaestate.KEEP_BALL);
-    }
-
-    @Override
+    
     public Command OUTTAKE() {
-        return setState(Algaestate.OUTTAKE);
+        return new InstantCommand(
+            () -> setState(Algaestate.OUTTAKE), this
+        );
     }
     
     //convert degrees to ticks as the magencoder reads in ticks; 4096 ticks per rotation per documentation
@@ -117,7 +130,6 @@ public class AlgaeIntakeSRX extends SubsystemBase implements AlgaeIO  {
 
     public void runOpenLoop(double speed){
         pivot_L.set(ControlMode.PercentOutput, speed);
-        SmartDashboard.putNumber("Encoder angle", tickstoDegrees(pivot_L.getSelectedSensorPosition()));
     }
 
 
@@ -128,9 +140,16 @@ public class AlgaeIntakeSRX extends SubsystemBase implements AlgaeIO  {
 
     public Trigger isOuttaking = new Trigger(() -> savedState == Algaestate.OUTTAKE);
 
+//return currentas state of the algae intake
+    private String getState(){
+        return savedState.name();
+    }
 
 //for any sensor verification or logging
     @Override
-    public void periodic(){}
+    public void periodic(){
+        SmartDashboard.putNumber("Encoder angle", tickstoDegrees(pivot_L.getSelectedSensorPosition()));
+        SmartDashboard.putString(getSubsystem(), getState());
+    }
 
 }

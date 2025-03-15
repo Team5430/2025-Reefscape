@@ -80,7 +80,7 @@ public class Odometry {
         pose2dReference.set(mPoseEstimator.getEstimatedPosition());
 
         //update vision
-   //     mVision.setPose2d(getPose2d());
+    //    mVision.setPose2d(getPose2d());
 
         //add vision measurement
 //    mPoseEstimator.addVisionMeasurement(mVision.getVisionEstimate().get().getPose2d(), mVision.getVisionEstimate().get().getTimestamp());

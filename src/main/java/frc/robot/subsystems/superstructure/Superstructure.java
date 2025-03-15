@@ -2,9 +2,7 @@ package frc.robot.subsystems.superstructure;
 
 import com.team5430.control.ControlSystem;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.superstructure.Algae.AlgaeIO;
+import frc.robot.subsystems.superstructure.Algae.AlgaeIntakeSRX;
 
 
 public class Superstructure extends ControlSystem{
@@ -14,10 +12,10 @@ public class Superstructure extends ControlSystem{
 
 
 //declare all superstructure components
-    AlgaeIO algae;
+    AlgaeIntakeSRX algae;
 
 //constructor for all superstructure components
-    public Superstructure(AlgaeIO algae){
+    public Superstructure(AlgaeIntakeSRX algae){
         this.algae = algae;
 
 
@@ -32,7 +30,6 @@ public class Superstructure extends ControlSystem{
     public void Stop() {
         
     }
-
     @Override
     public boolean configureTest() {
        return false;
@@ -45,6 +42,5 @@ public class Superstructure extends ControlSystem{
     
     @Override
     public void  periodic() {
-        algae.periodic();    
     }
 }

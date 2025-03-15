@@ -2,17 +2,13 @@ package com.team5430.control;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class ControllerManager {
 
   static ControllerManager instance;
-  static CommandXboxController XboxController;
+  static CommandJoystick driveController;
   static CommandJoystick controlBoard;
     // deadzone
     double axisThreshold = .3;
@@ -25,7 +21,7 @@ public class ControllerManager {
   
     // init controllers
     private ControllerManager() {
-      XboxController = new CommandXboxController(0);
+      driveController = new CommandJoystick(0);
       controlBoard = new CommandJoystick(1);
     }
   
@@ -38,27 +34,16 @@ public class ControllerManager {
 
   // Driver Controls
   public double getX() {
-    return MathUtil.applyDeadband(Xoptimize.calculate(XboxController.getLeftX()), axisThreshold);
+    return MathUtil.applyDeadband(Xoptimize.calculate(driveController.getX()), axisThreshold);
   }
 
   public double getY() {
-    return MathUtil.applyDeadband(Yoptimize.calculate(XboxController.getLeftY()), axisThreshold);
+    return MathUtil.applyDeadband(Yoptimize.calculate(driveController.getY()), axisThreshold);
   }
 
-  public double getRightX(){
-    return MathUtil.applyDeadband(Roptimize.calculate(XboxController.getRightY()), axisThreshold);
+  public double getTwist(){
+    return MathUtil.applyDeadband(Roptimize.calculate(driveController.getTwist()), axisThreshold);
   }
-
-  public Trigger getRightTrigger(){
-    return XboxController.rightTrigger();
-  }
-
-  public Command setDriverRumble(boolean on) {
-    return Commands.runOnce(
-      () -> XboxController.setRumble(RumbleType.kBothRumble, 1)
-      ).withName("Driver Rumble: " + on);
-  }
-
 
   // CoPilot Controls
   public Trigger getL4(){
