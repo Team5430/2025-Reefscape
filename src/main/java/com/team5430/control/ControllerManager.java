@@ -45,6 +45,14 @@ public class ControllerManager {
     return MathUtil.applyDeadband(Roptimize.calculate(driveController.getTwist()), axisThreshold);
   }
 
+  public Trigger getLeftAlign(){
+    return driveController.button(3);
+  }
+
+  public Trigger getRightAlign(){
+    return driveController.button(4);
+  }
+
   // CoPilot Controls
   public Trigger getL4(){
     return controlBoard.button(1);

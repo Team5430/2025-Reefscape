@@ -110,6 +110,28 @@ public class RobotContainer {
         
         mDrive.setDefaultCommand(driveCommand);
 
+    //TODO: test irl
+        mControllerManager
+          .getLeftAlign()
+          .onTrue(
+            driveCommand.withX(
+              () -> {
+                return m_Vision.proportionalAim() + 1;
+              }
+            )
+          );
+        
+        mControllerManager
+          .getRightAlign()
+          .onTrue(
+            driveCommand.withX(
+              () -> {
+                return m_Vision.proportionalAim() - 1;
+              }
+            )
+          );
+
+
 
       }
 
