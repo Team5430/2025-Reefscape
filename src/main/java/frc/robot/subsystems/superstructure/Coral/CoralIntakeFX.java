@@ -27,8 +27,6 @@ public class CoralIntakeFX extends SubsystemBase {
         }
     }
 
-
-
     
 //TODO: REPLACE Talon WITH TALONFX
 
@@ -38,6 +36,10 @@ public class CoralIntakeFX extends SubsystemBase {
 
     private CoralState savedState = CoralState.IDLE;
 
+    private void motorConfig(){
+        
+    }
+
     public void setState(CoralState state) {
         savedState = state;
     
@@ -45,6 +47,8 @@ public class CoralIntakeFX extends SubsystemBase {
                 wristMotor.set(state.WRIST_POSITION);
                 intakeMotor.set(state.OUTPUT);
     }
+    
+
 
 
     private String getState(){

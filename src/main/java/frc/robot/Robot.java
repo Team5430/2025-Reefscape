@@ -6,7 +6,7 @@ package frc.robot;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 
-import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.*;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
@@ -15,10 +15,9 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-@Logged
+
 public class Robot extends TimedRobot {
 
-  @Logged(name = "RobotContainer")
   private RobotContainer m_robotContainer;
 
   public Robot() {
@@ -28,41 +27,42 @@ public class Robot extends TimedRobot {
   //update odometry in the background
   addPeriodic(m_robotContainer.odometryThread::updateOdometry, .02);
 
+//try it out
 // Configure Epilogue logging
-    Epilogue.configure(config -> {
-      // Log only to disk, instead of the default NetworkTables logging
+    // Epilogue.configure(config -> {
+    //   // Log only to disk, instead of the default NetworkTables logging
 
-      // Note that this means data cannot be analyzed in realtime by a dashboard
+    //   // Note that this means data cannot be analyzed in realtime by a dashboard
       
 
-      switch (getRuntimeType()) {
+    //   switch (getRuntimeType()) {
 
-      case kSimulation:
-        // If running in simulation, then we'd want to re-throw any errors that
-        // occur so we can debug and fix them!
+    //   case kSimulation:
+    //     // If running in simulation, then we'd want to re-throw any errors that
+    //     // occur so we can debug and fix them!
       
-        config.errorHandler = ErrorHandler.crashOnError();
-        config.minimumImportance = Logged.Importance.DEBUG;
-        break;
+    //     config.errorHandler = ErrorHandler.crashOnError();
+    //     config.minimumImportance = Logged.Importance.DEBUG;
+    //     break;
 
-      case kRoboRIO:
-        // Only log critical information instead of the default DEBUG level.
-        // This can be helpful in a pinch to reduce network bandwidth or log file size
-        // while still logging important information
-        config.backend = new FileBackend(DataLogManager.getLog());
-        config.minimumImportance = Logged.Importance.CRITICAL;
-        break;
-        default:
+    //   case kRoboRIO:
+    //     // Only log critical information instead of the default DEBUG level.
+    //     // This can be helpful in a pinch to reduce network bandwidth or log file size
+    //     // while still logging important information
+    //     config.backend = new FileBackend(DataLogManager.getLog());
+    //     config.minimumImportance = Logged.Importance.CRITICAL;
+    //     break;
+    //     default:
 
-          break;
+    //       break;
   
-      }
-    });
+    //   }
+    // });
 
 
 
   // Set up logging
-  Epilogue.bind(this);
+  //Epilogue.bind(this);
   
   }
 
@@ -95,10 +95,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-
+     
      var m_Auto = m_robotContainer.getAutonomousCommand();
 
-        m_Auto.schedule();
+    m_Auto.schedule();
+  
   }
 
   @Override

@@ -20,7 +20,7 @@ public class AlgaeIntakeSRX extends SubsystemBase  {
     //starts with letter of corresponding system
   public  enum Algaestate{
         IDLE(-30, 0),
-        INTAKE(-71, -.3),
+        INTAKE(-79, -.5),
         OUTTAKE(-90, .6);
     
         public double POSITION;

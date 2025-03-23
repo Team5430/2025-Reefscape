@@ -6,8 +6,6 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.team5430.control.ControlSystem;
 
-import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -102,7 +100,6 @@ public class DriveControlSystem extends ControlSystem {
         }
     }
 
-    @Logged(name = "Heading", importance = Importance.INFO)
     public synchronized Rotation2d getRotation2d() {
         rotation2dRef.set(mGyro != null ? mGyro.getRotation2d().rotateBy(gyroOffset) : driveTrain.getRotation2d());
         return rotation2dRef.get();
@@ -112,7 +109,6 @@ public class DriveControlSystem extends ControlSystem {
         return driveTrain.getPositions(true);
     }
 
-    @Logged(name = "States", importance = Importance.INFO)
     public synchronized SwerveModuleState[] getModuleStates() {
         return driveTrain.getStates(true);
     }

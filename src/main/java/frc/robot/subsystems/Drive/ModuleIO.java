@@ -7,8 +7,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Voltage;
 
 public interface ModuleIO {
-    
-
 
     public Rotation2d getRotation2d();
 

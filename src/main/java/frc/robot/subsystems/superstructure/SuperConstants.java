@@ -26,9 +26,8 @@ public class SuperConstants {
     }
 
     public class CoralConstants{
-        public static final int PIVOT_CANID = 0;
-        public static final int WRIST_CANID = 0;
-        public static final int INTAKE_CANID = 0;
+        public static final int PIVOT_CANID = 30;
+        public static final int INTAKE_CANID = 31;
 
         //pivot gear ratio
         public static final double PIVOT_GRATIO = 1;
@@ -40,8 +39,8 @@ public class SuperConstants {
     }
 
     public class ElevatorConstants{
-        public static final int L_CANID = 0;
-        public static final int R_CANID = 0; 
+        public static final int L_CANID = 40;
+        public static final int R_CANID = 41; 
 
         //elevator gear ratio
         public static final int ELEVATOR_GRATIO = 7;

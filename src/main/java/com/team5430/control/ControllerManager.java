@@ -11,9 +11,9 @@ public class ControllerManager {
   static CommandJoystick driveController;
   static CommandJoystick controlBoard;
     // deadzone
-    double axisThreshold = .3;
+    double axisThreshold = .2;
     //  1/6th of a second  from 0 to 100%
-    double mRate = 6;
+    double mRate = 10;
   
     SlewRateLimiter Xoptimize = new SlewRateLimiter(mRate);
     SlewRateLimiter Yoptimize = new SlewRateLimiter(mRate);
@@ -42,7 +42,7 @@ public class ControllerManager {
   }
 
   public double getTwist(){
-    return MathUtil.applyDeadband(Roptimize.calculate(driveController.getTwist()), axisThreshold);
+    return MathUtil.applyDeadband(Roptimize.calculate(driveController.getZ()), axisThreshold);
   }
 
   public Trigger getLeftAlign(){

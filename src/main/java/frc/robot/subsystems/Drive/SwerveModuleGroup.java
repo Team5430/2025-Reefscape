@@ -25,8 +25,6 @@ public class SwerveModuleGroup {
   protected Rotation2d robotAngle;
   protected SwerveModulePosition deltaPositions[];
 
-
-
   /**
    * Modular Swerve creation, can be used to create up to 4 modules at a time.
    * NOTE: Consider reserving CANids 0-8 for motors and CANCoders
@@ -57,7 +55,6 @@ public class SwerveModuleGroup {
     }
     
   }
-
 
   /** Set Module States to desired state */
   public void setStates(SwerveModuleState... currentStates) {

@@ -135,10 +135,8 @@ public class SwerveModuleIO implements ModuleIO {
     constants.MODULES[ModuleNumber].INVERTED() 
     ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
 
-    
-
     // max amperage
-    driveConfig.CurrentLimits.SupplyCurrentLimit = 30 ;
+    driveConfig.CurrentLimits.SupplyCurrentLimit = 70;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     
     // curent limits
@@ -199,7 +197,7 @@ public class SwerveModuleIO implements ModuleIO {
     double wantedVelocity = state.speedMetersPerSecond;
 
     // Set the throttle motor to the desired speed
-    throttleMotor.setControl(velocity.withVelocity(wantedVelocity));
+    throttleMotor.setControl(velocity.withVelocity(wantedVelocity * 5));
   }
 
   /**

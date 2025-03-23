@@ -39,15 +39,12 @@ public class RobotContainer {
     //Subsystems
       protected ControlSystemManager controlSystemManager;
 
-      @Logged
       protected DriveControlSystem mDrive;
       protected VisionSub m_Vision;
       protected AlgaeIntakeSRX m_AlgaeIntake;
-      protected CoralIntakeFX m_CoralIntake;
       protected ElevatorFX m_Elevator;
 
     //Odometry
-      @Logged
       protected Odometry odometryThread;
     
     //Controllers
@@ -68,7 +65,9 @@ public class RobotContainer {
     mControllerManager = ControllerManager.getInstance();
 
             //declare subsystems
-              //drive command
+                mDrive = new DriveControlSystem();
+                
+                //drive command
                 driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getTwist, mDrive);
              //   m_Superstructure = new Superstructure(new AlgaeIntakeSRX());
                 m_AlgaeIntake = new AlgaeIntakeSRX();
@@ -86,51 +85,29 @@ public class RobotContainer {
                 AlgaeBindings(true);
 
     
-    // Initialize control system manager
-    controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
+      // Initialize control system manager
+      controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
 
-    // Initialize odometry
-    odometryThread = new Odometry(mDrive, m_Vision);
+      // Initialize odometry
+      odometryThread = new Odometry(mDrive, m_Vision);
 
-    //named commands for path planner
-    configureNamedCommands();
+      //named commands for path planner
+      configureNamedCommands();
 
-    // Setup auto chooser
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+      // Setup auto chooser
+      autoChooser = AutoBuilder.buildAutoChooser();
+      SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    // Setup test chooser
-    testChooser = ControlSystemManager.buildTestChooser();
-    SmartDashboard.putData("Test Chooser", testChooser);
-        
+      // Setup test chooser
+      testChooser = ControlSystemManager.buildTestChooser();
+      SmartDashboard.putData("Test Chooser", testChooser);
+          
     }
       
       private void DriveBindings(boolean enable){
         if(!enable) return;
         
         mDrive.setDefaultCommand(driveCommand);
-
-    //TODO: test irl
-        mControllerManager
-          .getLeftAlign()
-          .onTrue(
-            driveCommand.withX(
-              () -> {
-                return m_Vision.proportionalAim() + 1;
-              }
-            )
-          );
-        
-        mControllerManager
-          .getRightAlign()
-          .onTrue(
-            driveCommand.withX(
-              () -> {
-                return m_Vision.proportionalAim() - 1;
-              }
-            )
-          );
-
 
 
       }
@@ -180,7 +157,6 @@ public class RobotContainer {
                 // Pathplanner example to register commands for GUI usage
         NamedCommands.registerCommand("Score Algae", new PrintCommand("SCORED ALGAE"));
         NamedCommands.registerCommand("Pickup Algae", new PrintCommand("PICKED UP ALGAE"));
-        NamedCommands.registerCommand("null", null);
 
 
       }

@@ -11,10 +11,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.drive.DriveControlSystem;
 import frc.robot.subsystems.vision.VisionSub;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.json.simple.parser.ParseException;
@@ -83,13 +87,12 @@ public class Odometry {
     //    mVision.setPose2d(getPose2d());
 
         //add vision measurement
-//    mPoseEstimator.addVisionMeasurement(mVision.getVisionEstimate().get().getPose2d(), mVision.getVisionEstimate().get().getTimestamp());
+  //  mPoseEstimator.addVisionMeasurement(mVision.getVisionEstimate().get().getPose2d(), mVision.getVisionEstimate().get().getTimestamp());
 
     }
     
 
     //get pose2d
-    @Logged(name = "Pose2d")
     public Pose2d getPose2d() {
 
         return pose2dReference == null ? new Pose2d() : pose2dReference.get();
@@ -105,14 +108,18 @@ public class Odometry {
     //help to run pre made paths in deploy/pathplanner/paths
     private Command runPath(String pathName){
         //try to run path
-        try {
-            return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName));
+            return new DeferredCommand(() -> {
+                try {
+                    return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName));
         //catch any problems with running path
-        } catch (FileVersionException | IOException | ParseException e) {
-            DriverStation.reportError("ODOMETRY THREAD: " + e.getMessage(), true);
-        }
-        //return null if path fails
-            return null;
+                } catch (FileVersionException | IOException | ParseException e) {
+                    DriverStation.reportError("ODOMETRY THREAD: " + e.getMessage(), true);
+                }
+                        //run nothing if it fails
+                    return Commands.none();
+                }, 
+                 Set.of(mDrive));
+
     }
  
         

@@ -91,7 +91,7 @@ public  class SwerveModuleConstants {
 
   // Feedforward constants for steering
   public final double STEER_KV = 0.12; // A velocity target of 1 rps results in 0.12 V output
-  public final double STEER_KS = 0.24; // Add 0.25 V output to overcome static friction
+  public final double STEER_KS = 0.25; // Add 0.25 V output to overcome static friction
   public final double STEER_KA = 0.1;  // An acceleration of 1 rps/s requires 0.01 V output
 
   // PID constants for throttle
