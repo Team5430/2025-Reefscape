@@ -20,15 +20,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.superstructure.Algae.AlgaeIntakeSRX;
 import frc.robot.subsystems.superstructure.Coral.CoralIntakeFX;
 import frc.robot.subsystems.superstructure.Elevator.ElevatorFX;
 import frc.robot.subsystems.drive.DriveControlSystem;
-import frc.robot.subsystems.vision.LimelightIO;
-import frc.robot.subsystems.vision.SimulatedCameraIO;
-import frc.robot.subsystems.vision.VisionSub;
 
 public class RobotContainer {
 
@@ -40,8 +36,8 @@ public class RobotContainer {
       protected ControlSystemManager controlSystemManager;
 
       protected DriveControlSystem mDrive;
-      protected VisionSub m_Vision;
       protected AlgaeIntakeSRX m_AlgaeIntake;
+      protected CoralIntakeFX m_CoralIntake;
       protected ElevatorFX m_Elevator;
 
     //Odometry
@@ -71,12 +67,9 @@ public class RobotContainer {
                 driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getTwist, mDrive);
              //   m_Superstructure = new Superstructure(new AlgaeIntakeSRX());
                 m_AlgaeIntake = new AlgaeIntakeSRX();
-                 
-                //set vision setup based on robot mode
-                m_Vision = Constants.RobotisReal().getAsBoolean() ? new VisionSub(
-                  new LimelightIO(VisionConstants.CameraName, VisionConstants.CameraToRobot)) :
-                  new VisionSub(new SimulatedCameraIO("Sim-camera1", VisionConstants.CameraToRobot));
-             
+                m_CoralIntake = new CoralIntakeFX();
+                
+                
               //controller bindings based on subsystem
                 DriveBindings(true);
                 TuningBindings(false);
@@ -89,7 +82,7 @@ public class RobotContainer {
       controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
 
       // Initialize odometry
-      odometryThread = new Odometry(mDrive, m_Vision);
+      odometryThread = new Odometry(mDrive);
 
       //named commands for path planner
       configureNamedCommands();

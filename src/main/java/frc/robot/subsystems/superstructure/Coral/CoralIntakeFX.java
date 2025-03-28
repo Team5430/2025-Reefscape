@@ -1,10 +1,19 @@
 package frc.robot.subsystems.superstructure.Coral;
 
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorSensorV3.ProximitySensorMeasurementRate;
+import com.revrobotics.ColorSensorV3.ProximitySensorResolution;
 
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.superstructure.SuperConstants;
 
 public class CoralIntakeFX extends SubsystemBase {
 
@@ -15,7 +24,7 @@ public class CoralIntakeFX extends SubsystemBase {
         L2(0.2, 0.7),
         L3(0.3, 0.8),
         L4(0.4, 0.9),
-        CORAL_STATION(0.5, 1.0);
+        CORAL_STATION(0.5, .7);
 
         public double OUTPUT;
         public double WRIST_POSITION;
@@ -28,27 +37,77 @@ public class CoralIntakeFX extends SubsystemBase {
     }
 
     
-//TODO: REPLACE Talon WITH TALONFX
+//TODO: MOTORS
 
-    private TalonFX pivotMotor = new TalonFX(0);
-    private TalonFX wristMotor = new TalonFX(1);
-    private TalonFX intakeMotor = new TalonFX(2);
+    private TalonFX pivotMotor = new TalonFX(SuperConstants.CoralConstants.PIVOT_CANID);
+    private TalonSRX intakeMotor = new TalonSRX(SuperConstants.CoralConstants.INTAKE_CANID);
+
+//COLOR SENSOR
+    private ColorSensorV3 coralDetector = new ColorSensorV3(Port.kOnboard);
 
     private CoralState savedState = CoralState.IDLE;
 
-    private void motorConfig(){
+    public CoralIntakeFX(){
+        coralDetector.configureProximitySensor(ProximitySensorResolution.kProxRes9bit, ProximitySensorMeasurementRate.kProxRate25ms);
         
+        motorConfig();
+    }
+
+    private void motorConfig(){
+        TalonFXConfiguration  pivotMotorConfig = new TalonFXConfiguration();
+    
+        pivotMotorConfig.Slot0.kP = SuperConstants.CoralConstants.kP;
+        pivotMotorConfig.Feedback.SensorToMechanismRatio = SuperConstants.CoralConstants.PIVOT_GRATIO;
+
+ 
     }
 
     public void setState(CoralState state) {
         savedState = state;
     
                 pivotMotor.set(state.PIVOT_POSITION);
-                wristMotor.set(state.WRIST_POSITION);
-                intakeMotor.set(state.OUTPUT);
+                intakeMotor.set(TalonSRXControlMode.PercentOutput, state.OUTPUT);
+    }
+
+    public Command IDLE(){
+        return new InstantCommand(
+        () -> setState(CoralState.IDLE), this
+        );
+    }
+
+    public Command L1(){
+        return new InstantCommand(
+        () -> setState(CoralState.L1), this
+        );
+    }
+
+    public Command L2(){
+        return new InstantCommand(
+        () -> setState(CoralState.L2), this
+        );
+    }
+
+    public Command L3(){
+        return new InstantCommand(
+        () -> setState(CoralState.L3), this
+        );
     }
     
+    public Command L4(){
+        return new InstantCommand(
+        () -> setState(CoralState.L4), this
+        );
+    }
 
+    public Command CORAL_STATION(){
+        return new InstantCommand(
+        () -> setState(CoralState.CORAL_STATION), this
+        );
+    }
+    
+    public boolean getDetected(){
+        return coralDetector.getProximity() > 50;
+    }
 
 
     private String getState(){
@@ -57,6 +116,6 @@ public class CoralIntakeFX extends SubsystemBase {
 
     public void periodic() {
         SmartDashboard.putString(getName(), getState());
+        SmartDashboard.putBoolean("CORAL DETECTED", getDetected());
     }
-    
-}
+ }

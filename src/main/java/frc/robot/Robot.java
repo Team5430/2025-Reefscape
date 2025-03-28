@@ -6,12 +6,7 @@ package frc.robot;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 
-import edu.wpi.first.epilogue.*;
-import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.logging.FileBackend;
-import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -25,7 +20,7 @@ public class Robot extends TimedRobot {
   m_robotContainer = new RobotContainer();
 
   //update odometry in the background
-  addPeriodic(m_robotContainer.odometryThread::updateOdometry, .02);
+  addPeriodic(m_robotContainer.odometryThread::updateOdometry, .03);
 
 //try it out
 // Configure Epilogue logging

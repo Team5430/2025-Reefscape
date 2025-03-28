@@ -30,12 +30,11 @@ public class SuperConstants {
         public static final int INTAKE_CANID = 31;
 
         //pivot gear ratio
-        public static final double PIVOT_GRATIO = 1;
-
-        //wrist gear ratio
-        public static final double WRIST_GRATIO = 1;
-
-
+        public static final double PIVOT_GRATIO = 7;
+        
+        //
+        public static final double kP = .1;
+        
     }
 
     public class ElevatorConstants{
