@@ -73,7 +73,7 @@ public class RobotContainer {
               //controller bindings based on subsystem
                 DriveBindings(true);
                 TuningBindings(false);
-                CoralBindings(true);
+                CoralBindings(false);
                 ElevatorBindings(true);
                 AlgaeBindings(true);
 
@@ -127,7 +127,7 @@ public class RobotContainer {
               mControllerManager
           .getAlgaeIn()
           .onTrue(m_AlgaeIntake.INTAKE())
-          .onFalse(m_AlgaeIntake.IDLE());
+          .onFalse(m_AlgaeIntake.HOLD());
           
               mControllerManager
           .getAlgaeOut()

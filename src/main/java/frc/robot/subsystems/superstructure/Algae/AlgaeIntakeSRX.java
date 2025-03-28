@@ -19,8 +19,9 @@ public class AlgaeIntakeSRX extends SubsystemBase  {
     //starts with letter of corresponding system
   public  enum Algaestate{
         IDLE(-30, 0),
-        INTAKE(-79, -.5),
-        OUTTAKE(-90, .6);
+        INTAKE(-90, -.7),
+        OUTTAKE(-90, .6),
+        HOLD(-79, -.2);
     
         public double POSITION;
         public double OUTPUT;
@@ -113,6 +114,12 @@ public class AlgaeIntakeSRX extends SubsystemBase  {
             () -> setState(Algaestate.OUTTAKE), this
         );
     }
+
+    public Command HOLD(){
+        return new InstantCommand(
+            () -> setState(Algaestate.HOLD), this
+        );
+    }
     
     //convert degrees to ticks as the magencoder reads in ticks; 4096 ticks per rotation per documentation
     private double degreestoTicks(double degrees){
@@ -137,8 +144,7 @@ public class AlgaeIntakeSRX extends SubsystemBase  {
 //for any sensor verification or logging
     @Override
     public void periodic(){
-        SmartDashboard.putNumber("Encoder angle", tickstoDegrees(pivot_L.getSelectedSensorPosition()));
-        SmartDashboard.putString(getSubsystem(), getState());
+        SmartDashboard.putString("ALGAE INTAKE", getState());
     }
 
 }

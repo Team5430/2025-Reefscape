@@ -12,7 +12,10 @@ import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.superstructure.SuperConstants;
 
 public class CoralIntakeFX extends SubsystemBase {
@@ -69,6 +72,7 @@ public class CoralIntakeFX extends SubsystemBase {
                 intakeMotor.set(TalonSRXControlMode.PercentOutput, state.OUTPUT);
     }
 
+    
     public Command IDLE(){
         return new InstantCommand(
         () -> setState(CoralState.IDLE), this
@@ -76,33 +80,53 @@ public class CoralIntakeFX extends SubsystemBase {
     }
 
     public Command L1(){
-        return new InstantCommand(
+        return new SequentialCommandGroup(
+            new InstantCommand(
         () -> setState(CoralState.L1), this
+        ),
+            new WaitUntilCommand(() -> { return !getDetected();}),
+            IDLE()
         );
     }
 
     public Command L2(){
-        return new InstantCommand(
+        return new SequentialCommandGroup(
+            new InstantCommand(
         () -> setState(CoralState.L2), this
+        ),
+            new WaitUntilCommand(() -> { return !getDetected();}),
+            IDLE()
         );
     }
 
     public Command L3(){
-        return new InstantCommand(
+        return new SequentialCommandGroup(
+            new InstantCommand(
         () -> setState(CoralState.L3), this
+        ),
+            new WaitUntilCommand(() -> { return !getDetected();}),
+            IDLE()
         );
     }
     
     public Command L4(){
-        return new InstantCommand(
+        return new SequentialCommandGroup(
+            new InstantCommand(
         () -> setState(CoralState.L4), this
+        ),
+            new WaitUntilCommand(() -> { return !getDetected();}),
+            IDLE()
         );
     }
 
     public Command CORAL_STATION(){
-        return new InstantCommand(
+        return new SequentialCommandGroup(
+            new InstantCommand(
         () -> setState(CoralState.CORAL_STATION), this
-        );
+        ),
+            new WaitUntilCommand(this::getDetected),
+            IDLE()
+        );        
     }
     
     public boolean getDetected(){
