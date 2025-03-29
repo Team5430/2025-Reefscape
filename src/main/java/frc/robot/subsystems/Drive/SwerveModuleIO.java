@@ -136,7 +136,7 @@ public class SwerveModuleIO implements ModuleIO {
     ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
 
     // max amperage
-    driveConfig.CurrentLimits.SupplyCurrentLimit = 70;
+    driveConfig.CurrentLimits.SupplyCurrentLimit = 30;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     
     // curent limits

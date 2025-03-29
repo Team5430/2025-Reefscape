@@ -7,13 +7,14 @@ import frc.robot.subsystems.drive.Requests.FieldCentricRequest;
 import java.util.function.DoubleSupplier;
 
 
+
 public class DriveCommand extends Command {
 
     // Subsystem to require
     private final DriveControlSystem mDrive;
 
     // Double suppliers for human inputs
-    private final DoubleSupplier xTranslation, yTranslation, rTranslation;
+    private final DoubleSupplier xTranslation, yTranslation, rTranslation, Limiter;
 
     private final FieldCentricRequest request;
     /**
@@ -29,6 +30,7 @@ public class DriveCommand extends Command {
             DoubleSupplier X,
             DoubleSupplier Y,
             DoubleSupplier Rotation,
+            DoubleSupplier Limiter,
             DriveControlSystem subsystem) {
 
         // Create request
@@ -37,6 +39,7 @@ public class DriveCommand extends Command {
         this.xTranslation = X;
         this.yTranslation = Y;
         this.rTranslation = Rotation;
+        this.Limiter = Limiter;
         this.mDrive = subsystem;
 
         // Require Drive subsystem
@@ -55,9 +58,9 @@ public class DriveCommand extends Command {
     //TODO: the multipliier is meant to be the max speed of the robot -> better way to do so?
     
         // Apply inputs; invert to normal cordinate system 
-        request.withX(-x * 5)
-               .withY(-y * 5)
-               .withRot(rotation * 10)
+        request.withX(Math.abs(Limiter.getAsDouble()) * rotation * -x * 5)
+               .withY(Math.abs(Limiter.getAsDouble()) * -y * 5)
+               .withRot(Math.abs(Limiter.getAsDouble()) * rotation * 2)
                .withRobotAngle(mDrive.getRotation2d());
                
     
@@ -69,15 +72,15 @@ public class DriveCommand extends Command {
 
 
     public DriveCommand withX(DoubleSupplier X) {
-        return new DriveCommand(X, yTranslation, rTranslation, mDrive);
+        return new DriveCommand(X, yTranslation, rTranslation, Limiter, mDrive);
     }
 
     public DriveCommand withY(DoubleSupplier Y) {
-        return new DriveCommand(xTranslation, Y, rTranslation, mDrive);
+        return new DriveCommand(xTranslation, Y, rTranslation, Limiter,  mDrive);
     }
 
     public DriveCommand withRotation(DoubleSupplier Rotation) {
-        return new DriveCommand(xTranslation, yTranslation, Rotation, mDrive);
+        return new DriveCommand(xTranslation, yTranslation, Rotation, Limiter, mDrive);
     }
 
 

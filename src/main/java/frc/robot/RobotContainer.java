@@ -10,8 +10,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.team5430.control.ControllerManager;
 import com.team5430.control.ControlSystemManager;
 
-import edu.wpi.first.epilogue.Logged;
-
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -64,11 +62,9 @@ public class RobotContainer {
                 mDrive = new DriveControlSystem();
                 
                 //drive command
-                driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getTwist, mDrive);
-             //   m_Superstructure = new Superstructure(new AlgaeIntakeSRX());
+                driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getTwist, mControllerManager::getZ, mDrive);
                 m_AlgaeIntake = new AlgaeIntakeSRX();
                 m_CoralIntake = new CoralIntakeFX();
-                
                 
               //controller bindings based on subsystem
                 DriveBindings(true);
