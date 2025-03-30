@@ -80,8 +80,8 @@ public class SwerveModuleGroup {
   }
 
   /**Drive Based on given request {@link frc.robot.subsystems.drive.Requests} */
-  public void control(Requests request){
-    SwerveModuleState[] states = constants.KINEMATICS.toSwerveModuleStates(request.Speeds());
+  public void control(ChassisSpeeds request) {
+    SwerveModuleState[] states = constants.KINEMATICS.toSwerveModuleStates(request);
     setStates(states);
   }
   /**

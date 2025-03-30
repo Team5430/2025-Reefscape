@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.Requests.*;
 
 public class DriveControlSystem extends ControlSystem {
 
@@ -86,12 +85,8 @@ public class DriveControlSystem extends ControlSystem {
     }
 
     // Drive methods
-    public void control(Requests request) {
+    public void control(ChassisSpeeds request) {
         driveTrain.control(request);
-    }
-
-    public void autoControl(ChassisSpeeds speeds) {
-        driveTrain.control(new RobotCentricRequest().withSpeeds(speeds));
     }
 
     public synchronized void ResetHeading() {
@@ -130,7 +125,7 @@ public class DriveControlSystem extends ControlSystem {
     public boolean configureTest() {
         if (RobotState.isTest()) {
             try {
-                control(new TestRequest());
+                control(new ChassisSpeeds());
                 DriverStation.reportWarning("Drive Test Succeeded", false);
                 return true;
             } catch (Exception e) {

@@ -79,7 +79,7 @@ public class Odometry {
                 this::getPose2d,
                 this::resetPose2d,
                 mDrive::getCurrentSpeeds,
-                mDrive::autoControl,
+                mDrive::control,
                 Constants.SwerveConstants.AUTO_FOLLOWER_CONFIG,
                 config,
                 Constants.shouldFlip(),
@@ -169,7 +169,6 @@ public class Odometry {
           
 
     }
-    
 
     //get pose2d
     public Pose2d getPose2d() {
@@ -182,39 +181,5 @@ public class Odometry {
     }
     
 
-    //help to run pre made paths in deploy/pathplanner/paths
-    private Command runPath(String pathName){
-        //try to run path
-            return new DeferredCommand(() -> {
-                try {
-                    return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName));
-        //catch any problems with running path
-                } catch (FileVersionException | IOException | ParseException e) {
-                    DriverStation.reportError("ODOMETRY THREAD: " + e.getMessage(), true);
-                }
-                        //run nothing if it fails
-                    return Commands.none();
-                }, 
-                 Set.of(mDrive));
-
-    }
-
-    //autoaligns to processor
-    public Command autoProcessor(){
-      try{
-
-        //check which side robot is on
-      if(Constants.shouldFlip().getAsBoolean()){
-            return AutoBuilder.pathfindToPose(FlippingUtil.flipFieldPose(proccesor), constraints, 0);
-          }else{
-            return AutoBuilder.pathfindToPose(
-            proccesor, constraints, 0 );
-          }
-      }catch(Exception e){
-        return new PrintCommand("CANNOT RUN AUTO: " + e.getLocalizedMessage());
-      }
-
-    }
-    
 
 }
