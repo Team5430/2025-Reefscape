@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.team5430.control.ControllerManager;
@@ -17,11 +16,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.superstructure.Algae.AlgaeIntakeSRX;
-import frc.robot.subsystems.superstructure.Coral.CoralIntakeFX;
-import frc.robot.subsystems.superstructure.Elevator.ElevatorFX;
 import frc.robot.subsystems.drive.DriveControlSystem;
 
 public class RobotContainer {
@@ -35,8 +31,6 @@ public class RobotContainer {
 
       protected DriveControlSystem mDrive;
       protected AlgaeIntakeSRX m_AlgaeIntake;
-      protected CoralIntakeFX m_CoralIntake;
-      protected ElevatorFX m_Elevator;
 
     //Odometry
       protected Odometry odometryThread;
@@ -62,9 +56,17 @@ public class RobotContainer {
                 mDrive = new DriveControlSystem();
                 
                 //drive command
-                driveCommand = new DriveCommand(mControllerManager::getX, mControllerManager::getY, mControllerManager::getTwist, mControllerManager::getZ, mDrive);
+                driveCommand = new DriveCommand
+                (mControllerManager::getX,
+                mControllerManager::getY,
+                mControllerManager::getTwist,
+                mControllerManager::getZ,
+                mDrive);
+
                 m_AlgaeIntake = new AlgaeIntakeSRX();
-                m_CoralIntake = new CoralIntakeFX();
+                
+                // Initialize odometry
+                odometryThread = new Odometry(mDrive);
                 
               //controller bindings based on subsystem
                 DriveBindings(true);
@@ -77,8 +79,7 @@ public class RobotContainer {
       // Initialize control system manager
       controlSystemManager = ControlSystemManager.getInstance().addControlSystem(mDrive);
 
-      // Initialize odometry
-      odometryThread = new Odometry(mDrive);
+      
 
       //named commands for path planner
       configureNamedCommands();
@@ -98,6 +99,11 @@ public class RobotContainer {
         
         mDrive.setDefaultCommand(driveCommand);
 
+
+
+        mControllerManager
+        .getTrigger()
+        .onTrue(odometryThread.autoProcessor());
 
       }
 

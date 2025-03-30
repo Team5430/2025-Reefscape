@@ -43,6 +43,9 @@ public class ControllerManager {
     return MathUtil.applyDeadband(driveController.getThrottle(), axisThreshold);
   }
 
+  public Trigger getTrigger(){
+    return driveController.button(1);
+  }
   public Trigger getLeftAlign(){
     return driveController.button(3);
   }

@@ -2,19 +2,25 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
+import com.pathplanner.lib.util.FlippingUtil;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.team5430.vision.LimelightHelpers;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.subsystems.drive.DriveControlSystem;
 
 import java.io.IOException;
@@ -35,11 +41,19 @@ public class Odometry {
     //pose estimator
     private final SwerveDrivePoseEstimator mPoseEstimator;
     private final RobotConfig config;
+    private final Field2d field;
+
+    private final Pose2d proccesor = new Pose2d(6, .5, new Rotation2d(-Math.PI/2));
+
+    private PathConstraints constraints = new PathConstraints(
+      3, 3,
+      Units.degreesToRadians(540), Units.degreesToRadians(720));
 
     
 
     public Odometry(DriveControlSystem drive) {
 
+        this.field = new Field2d();
         this.mDrive = drive;
 
         //get robot config for path planner
@@ -103,7 +117,7 @@ public class Odometry {
               }
         
               if(!doRejectUpdate)
-              {
+                {
                 mPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
                 mPoseEstimator.addVisionMeasurement(
                     mt1.pose,
@@ -132,20 +146,34 @@ public class Odometry {
         //cache pose2d
         pose2dReference.set(mPoseEstimator.getEstimatedPosition());
 
-        //update vision
-    //    mVision.setPose2d(getPose2d());
+            // Logging callback for current robot pose
+          PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+              // Do whatever you want with the pose here
+              field.setRobotPose(pose);
+          });
 
-        //add vision measurement
-  //  mPoseEstimator.addVisionMeasurement(mVision.getVisionEstimate().get().getPose2d(), mVision.getVisionEstimate().get().getTimestamp());
+          // Logging callback for target robot pose
+          PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+              // Do whatever you want with the pose here
+              field.getObject("target pose").setPose(pose);
+          });
+
+          // Logging callback for the active path, this is sent as a list of poses
+          PathPlannerLogging.setLogActivePathCallback((poses) -> {
+              // Do whatever you want with the poses here
+              field.getObject("path").setPoses(poses);
+          });
+        
+        //field upload
+        SmartDashboard.putData(field);
+          
 
     }
     
 
     //get pose2d
     public Pose2d getPose2d() {
-
         return pose2dReference == null ? new Pose2d() : pose2dReference.get();
-
     }
 
     //reset pose2d
@@ -170,9 +198,23 @@ public class Odometry {
                  Set.of(mDrive));
 
     }
- 
-        
 
+    //autoaligns to processor
+    public Command autoProcessor(){
+      try{
 
+        //check which side robot is on
+      if(Constants.shouldFlip().getAsBoolean()){
+            return AutoBuilder.pathfindToPose(FlippingUtil.flipFieldPose(proccesor), constraints, 0);
+          }else{
+            return AutoBuilder.pathfindToPose(
+            proccesor, constraints, 0 );
+          }
+      }catch(Exception e){
+        return new PrintCommand("CANNOT RUN AUTO: " + e.getLocalizedMessage());
+      }
+
+    }
+    
 
 }

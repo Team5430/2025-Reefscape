@@ -58,7 +58,7 @@ public class DriveCommand extends Command {
     //TODO: the multipliier is meant to be the max speed of the robot -> better way to do so?
     
         // Apply inputs; invert to normal cordinate system 
-        request.withX(Math.abs(Limiter.getAsDouble()) * rotation * -x * 5)
+        request.withX(Math.abs(Limiter.getAsDouble()) * -x * 5)
                .withY(Math.abs(Limiter.getAsDouble()) * -y * 5)
                .withRot(Math.abs(Limiter.getAsDouble()) * rotation * 2)
                .withRobotAngle(mDrive.getRotation2d());

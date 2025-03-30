@@ -126,11 +126,13 @@ public class AlgaeIntakeSRX extends SubsystemBase  {
         return degrees * 4096 / 360;
     }
 
+/* 
     //convert encoder ticks into degrees 
     private double tickstoDegrees(double ticks){
         return ticks * 360 / 4096;
     }
-
+*/
+    
     public void runOpenLoop(double speed){
         pivot_L.set(ControlMode.PercentOutput, speed);
     }
